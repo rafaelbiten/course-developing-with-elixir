@@ -6,6 +6,7 @@ defmodule Servy.Handler do
     |> rewrite_path
     |> route
     |> track
+    |> emojify_resp_body
     |> format_response
     |> IO.puts()
   end
@@ -87,6 +88,17 @@ defmodule Servy.Handler do
       _ ->
         conn
     end
+  end
+
+  defp emojify_resp_body(conn) do
+    case conn.status do
+      200 -> emojify_resp_body(conn, "😃")
+      _ -> conn
+    end
+  end
+
+  defp emojify_resp_body(conn, emoji) do
+    %{conn | resp_body: "#{emoji} #{conn.resp_body} #{emoji}"}
   end
 
   defp status_reason(code) do
