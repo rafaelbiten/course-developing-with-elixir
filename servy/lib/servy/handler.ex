@@ -27,6 +27,9 @@ defmodule Servy.Handler do
       "/wildlife" ->
         rewrite_path(conn, "/wildthings")
 
+      "/bears?id=" <> id ->
+        rewrite_path(conn, "/bears/#{id}")
+
       _ ->
         conn
     end
@@ -106,6 +109,13 @@ Enum.each(
     """,
     """
     GET /wildlife HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+
+    """,
+    """
+    GET /bears?id=1 HTTP/1.1
     Host: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
