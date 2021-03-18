@@ -2,8 +2,8 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> parse
-    |> rewrite_path
     |> IO.inspect()
+    |> rewrite_path
     |> route
     |> track
     |> format_response
@@ -37,19 +37,15 @@ defmodule Servy.Handler do
     %{conn | path: path}
   end
 
-  defp route(conn) do
-    route(conn, conn.method, conn.path)
-  end
-
-  defp route(conn, "GET", "/wildthings") do
+  defp route(%{method: "GET", path: "/wildthings"} = conn) do
     %{conn | status: 200, resp_body: "Bears, Leões, Tigers"}
   end
 
-  defp route(conn, "GET", "/bears") do
+  defp route(%{method: "GET", path: "/bears"} = conn) do
     %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  defp route(conn, "GET", "/bears/" <> id) do
+  defp route(%{method: "GET", path: "/bears/" <> id} = conn) do
     bear =
       case id do
         "0" -> "Teddy"
@@ -61,11 +57,11 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "#{bear} Bear"}
   end
 
-  defp route(conn, "DELETE", "/bears/" <> _id) do
+  defp route(%{method: "DELETE", path: "/bears/" <> _id} = conn) do
     %{conn | status: 403, resp_body: "It's forbidden to delete bears."}
   end
 
-  defp route(conn, _method, path) do
+  defp route(%{path: path} = conn) do
     %{conn | status: 404, resp_body: "The resource for #{path} could not be found."}
   end
 
