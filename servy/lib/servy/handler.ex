@@ -3,6 +3,7 @@ defmodule Servy.Handler do
     request
     |> parse
     |> IO.inspect()
+    |> rewrite_query_params
     |> rewrite_path
     |> route
     |> track
@@ -28,9 +29,6 @@ defmodule Servy.Handler do
       "/wildlife" ->
         rewrite_path(conn, "/wildthings")
 
-      "/bears?id=" <> id ->
-        rewrite_path(conn, "/bears/#{id}")
-
       _ ->
         conn
     end
@@ -39,6 +37,15 @@ defmodule Servy.Handler do
   defp rewrite_path(conn, path) do
     IO.puts("!!! Rewriting path from #{conn.path} to #{path}")
     %{conn | path: path}
+  end
+
+  defp rewrite_query_params(conn) do
+    if String.contains?(conn.path, "?id=") do
+      [path, id] = String.split(conn.path, "?id=")
+      rewrite_path(conn, "#{path}/#{id}")
+    else
+      conn
+    end
   end
 
   defp route(%{method: "GET", path: "/wildthings"} = conn) do
