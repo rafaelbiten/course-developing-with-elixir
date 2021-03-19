@@ -70,12 +70,36 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "#{bear} Bear"}
   end
 
+  defp route(%{method: "GET", path: "/about"} = conn) do
+    response_body_from_pages(conn, %{path: "../pages", file: "about.html"})
+  end
+
   defp route(%{method: "DELETE", path: "/bears/" <> _id} = conn) do
     %{conn | status: 403, resp_body: "It's forbidden to delete bears."}
   end
 
   defp route(%{path: path} = conn) do
     %{conn | status: 404, resp_body: "The resource for #{path} could not be found."}
+  end
+
+  defp response_body_from_pages(conn, %{path: path, file: file}) do
+    result =
+      Path.expand(path, __DIR__)
+      |> Path.join(file)
+      |> File.read()
+
+    case result do
+      {:ok, content} ->
+        %{conn | status: 200, resp_body: content}
+
+      {:error, :enoent} ->
+        %{conn | status: 404, resp_body: "File '#{path}' not found."}
+
+      {:error, error} ->
+        reason = List.to_string(:file.format_error(error))
+        formatted_error = "Error reading '#{path}': #{reason}"
+        %{conn | status: 500, resp_body: formatted_error}
+    end
   end
 
   defp format_response(conn) do
@@ -115,6 +139,7 @@ defmodule Servy.Handler do
       200 -> "OK"
       404 -> "Not Found"
       403 -> "Forbidden"
+      500 -> "Internal server error"
     end
   end
 end
@@ -165,6 +190,13 @@ Enum.each(
     """,
     """
     DELETE /bears/1 HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+
+    """,
+    """
+    GET /about HTTP/1.1
     Host: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
