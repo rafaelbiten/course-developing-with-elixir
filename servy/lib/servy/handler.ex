@@ -1,4 +1,6 @@
 defmodule Servy.Handler do
+  require Logger
+
   def handle(request) do
     request
     |> parse
@@ -35,7 +37,7 @@ defmodule Servy.Handler do
   end
 
   defp rewrite_path(conn, path) do
-    IO.puts("!!! Rewriting path from #{conn.path} to #{path}")
+    Logger.info("Rewriting path from #{conn.path} to #{path}")
     %{conn | path: path}
   end
 
@@ -89,7 +91,7 @@ defmodule Servy.Handler do
   defp track(%{status: status} = conn) do
     case status do
       404 ->
-        IO.puts("!!! Someone tried to reach an invalid route: #{conn.path}")
+        Logger.warn("Someone tried to reach an invalid route: #{conn.path}")
         conn
 
       _ ->
