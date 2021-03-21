@@ -58,6 +58,14 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
+  defp route(%{method: "GET", path: "/bears/new"} = conn) do
+    response_body_from_pages(conn, %{path: "../pages", file: "form.html"})
+  end
+
+  defp route(%{method: "GET", path: "/pages/" <> page} = conn) do
+    response_body_from_pages(conn, %{path: "../pages", file: "#{page}.html"})
+  end
+
   defp route(%{method: "GET", path: "/bears/" <> id} = conn) do
     bear =
       case id do
@@ -93,7 +101,7 @@ defmodule Servy.Handler do
         %{conn | status: 200, resp_body: content}
 
       {:error, :enoent} ->
-        %{conn | status: 404, resp_body: "File '#{path}' not found."}
+        %{conn | status: 404, resp_body: "File '#{path}/#{file}' not found."}
 
       {:error, error} ->
         reason = List.to_string(:file.format_error(error))
@@ -197,6 +205,20 @@ Enum.each(
     """,
     """
     GET /about HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+
+    """,
+    """
+    GET /bears/new HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+
+    """,
+    """
+    GET /pages/about HTTP/1.1
     Host: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
