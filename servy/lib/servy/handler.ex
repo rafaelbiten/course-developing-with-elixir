@@ -4,7 +4,8 @@ defmodule Servy.Handler do
   Serving as a bit of a playground to try different things/approaches.
   """
 
-  require Logger
+  # import Servy.Plugins,
+  #   only: [rewrite_query_params: 1, rewrite_path: 1, track: 1, emojify_resp_body: 1]
 
   @path_to %{
     pages: Path.expand("../pages", __DIR__)
@@ -15,11 +16,11 @@ defmodule Servy.Handler do
     request
     |> parse
     |> IO.inspect()
-    |> rewrite_query_params
-    |> rewrite_path
+    |> Servy.Plugins.rewrite_query_params()
+    |> Servy.Plugins.rewrite_path()
     |> route
-    |> track
-    |> emojify_resp_body
+    |> Servy.Plugins.track()
+    |> Servy.Plugins.emojify_resp_body()
     |> format_response
     |> IO.puts()
   end
@@ -34,30 +35,6 @@ defmodule Servy.Handler do
       |> String.split(" ")
 
     %{method: method, path: path, resp_body: "", status: nil}
-  end
-
-  defp rewrite_path(conn) do
-    case conn.path do
-      "/wildlife" ->
-        rewrite_path(conn, "/wildthings")
-
-      _ ->
-        conn
-    end
-  end
-
-  defp rewrite_path(conn, path) do
-    Logger.info("Rewriting path from #{conn.path} to #{path}")
-    %{conn | path: path}
-  end
-
-  defp rewrite_query_params(conn) do
-    if String.contains?(conn.path, "?id=") do
-      [path, id] = String.split(conn.path, "?id=")
-      rewrite_path(conn, "#{path}/#{id}")
-    else
-      conn
-    end
   end
 
   defp route(%{method: "GET", path: "/wildthings"} = conn) do
@@ -127,28 +104,6 @@ defmodule Servy.Handler do
 
     #{conn.resp_body}
     """
-  end
-
-  defp track(%{status: status} = conn) do
-    case status do
-      404 ->
-        Logger.warn("Someone tried to reach an invalid route: #{conn.path}")
-        conn
-
-      _ ->
-        conn
-    end
-  end
-
-  defp emojify_resp_body(conn) do
-    case conn.status do
-      200 -> emojify_resp_body(conn, "😃")
-      _ -> conn
-    end
-  end
-
-  defp emojify_resp_body(conn, emoji) do
-    %{conn | resp_body: "#{emoji} #{conn.resp_body} #{emoji}"}
   end
 
   defp status_reason(code) do
