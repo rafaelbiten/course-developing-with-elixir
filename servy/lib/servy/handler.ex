@@ -1,10 +1,16 @@
 defmodule Servy.Handler do
+  @moduledoc """
+  A rudimentary module to handle HTTP requests.
+  Serving as a bit of a playground to try different things/approaches.
+  """
+
   require Logger
 
   @path_to %{
     pages: Path.expand("../pages", __DIR__)
   }
 
+  @doc "The main module handler."
   def handle(request) do
     request
     |> parse
