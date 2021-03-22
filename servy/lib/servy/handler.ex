@@ -6,6 +6,9 @@ defmodule Servy.Handler do
 
   # import Servy.Plugins,
   #   only: [rewrite_query_params: 1, rewrite_path: 1, track: 1, emojify_resp_body: 1]
+  #   except: [rewrite_query_params: 1]
+  #   only: :functions
+  #   only: :macros
 
   @path_to %{
     pages: Path.expand("../pages", __DIR__)
