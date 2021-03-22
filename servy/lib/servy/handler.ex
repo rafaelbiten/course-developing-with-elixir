@@ -11,7 +11,7 @@ defmodule Servy.Handler do
   #   only: :macros
 
   @path_to %{
-    pages: Path.expand("../pages", __DIR__)
+    pages: Path.expand("pages", File.cwd!())
   }
 
   @doc "The main module handler."
