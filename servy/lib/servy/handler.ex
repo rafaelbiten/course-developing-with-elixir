@@ -36,11 +36,11 @@ defmodule Servy.Handler do
   end
 
   defp route(%{method: "GET", path: "/bears/new"} = conn) do
-    response_body_from_pages(conn, %{path: @path_to.pages, file: "form.html"})
+    Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "form.html"})
   end
 
   defp route(%{method: "GET", path: "/pages/" <> page} = conn) do
-    response_body_from_pages(conn, %{path: @path_to.pages, file: "#{page}.html"})
+    Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "#{page}.html"})
   end
 
   defp route(%{method: "GET", path: "/bears/" <> id} = conn) do
@@ -56,7 +56,7 @@ defmodule Servy.Handler do
   end
 
   defp route(%{method: "GET", path: "/about"} = conn) do
-    response_body_from_pages(conn, %{path: @path_to.pages, file: "about.html"})
+    Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "about.html"})
   end
 
   defp route(%{method: "DELETE", path: "/bears/" <> _id} = conn) do
@@ -65,25 +65,6 @@ defmodule Servy.Handler do
 
   defp route(%{path: path} = conn) do
     %{conn | status: 404, resp_body: "The resource for #{path} could not be found."}
-  end
-
-  defp response_body_from_pages(conn, %{path: path, file: file}) do
-    result =
-      Path.join(path, file)
-      |> File.read()
-
-    case result do
-      {:ok, content} ->
-        %{conn | status: 200, resp_body: content}
-
-      {:error, :enoent} ->
-        %{conn | status: 404, resp_body: "File '#{path}/#{file}' not found."}
-
-      {:error, error} ->
-        reason = List.to_string(:file.format_error(error))
-        formatted_error = "Error reading '#{path}': #{reason}"
-        %{conn | status: 500, resp_body: formatted_error}
-    end
   end
 
   defp format_response(conn) do
