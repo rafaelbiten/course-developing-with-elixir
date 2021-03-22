@@ -14,7 +14,7 @@ defmodule Servy.Handler do
   @doc "The main module handler."
   def handle(request) do
     request
-    |> parse
+    |> Servy.Parser.parse()
     |> IO.inspect()
     |> Servy.Plugins.rewrite_query_params()
     |> Servy.Plugins.rewrite_path()
@@ -26,16 +26,6 @@ defmodule Servy.Handler do
   end
 
   # Implementation
-
-  defp parse(request) do
-    [method, path, _protocol] =
-      request
-      |> String.split("\n")
-      |> List.first()
-      |> String.split(" ")
-
-    %{method: method, path: path, resp_body: "", status: nil}
-  end
 
   defp route(%{method: "GET", path: "/wildthings"} = conn) do
     %{conn | status: 200, resp_body: "Bears, Leões, Tigers"}
