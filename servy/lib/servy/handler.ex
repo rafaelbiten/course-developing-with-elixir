@@ -1,6 +1,10 @@
 defmodule Servy.Handler do
   require Logger
 
+  @path_to %{
+    pages: Path.expand("../pages", __DIR__)
+  }
+
   def handle(request) do
     request
     |> parse
@@ -59,11 +63,11 @@ defmodule Servy.Handler do
   end
 
   defp route(%{method: "GET", path: "/bears/new"} = conn) do
-    response_body_from_pages(conn, %{path: "../pages", file: "form.html"})
+    response_body_from_pages(conn, %{path: @path_to.pages, file: "form.html"})
   end
 
   defp route(%{method: "GET", path: "/pages/" <> page} = conn) do
-    response_body_from_pages(conn, %{path: "../pages", file: "#{page}.html"})
+    response_body_from_pages(conn, %{path: @path_to.pages, file: "#{page}.html"})
   end
 
   defp route(%{method: "GET", path: "/bears/" <> id} = conn) do
@@ -79,7 +83,7 @@ defmodule Servy.Handler do
   end
 
   defp route(%{method: "GET", path: "/about"} = conn) do
-    response_body_from_pages(conn, %{path: "../pages", file: "about.html"})
+    response_body_from_pages(conn, %{path: @path_to.pages, file: "about.html"})
   end
 
   defp route(%{method: "DELETE", path: "/bears/" <> _id} = conn) do
@@ -92,8 +96,7 @@ defmodule Servy.Handler do
 
   defp response_body_from_pages(conn, %{path: path, file: file}) do
     result =
-      Path.expand(path, __DIR__)
-      |> Path.join(file)
+      Path.join(path, file)
       |> File.read()
 
     case result do
