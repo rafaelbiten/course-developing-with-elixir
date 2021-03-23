@@ -10,6 +10,8 @@ defmodule Servy.Handler do
   #   only: :functions
   #   only: :macros
 
+  alias Servy.Conn
+
   @path_to %{
     pages: Path.expand("pages", File.cwd!())
   }
@@ -30,23 +32,23 @@ defmodule Servy.Handler do
 
   # Implementation
 
-  defp route(%{method: "GET", path: "/wildthings"} = conn) do
+  defp route(%Conn{method: "GET", path: "/wildthings"} = conn) do
     %{conn | status: 200, resp_body: "Bears, Leões, Tigers"}
   end
 
-  defp route(%{method: "GET", path: "/bears"} = conn) do
+  defp route(%Conn{method: "GET", path: "/bears"} = conn) do
     %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  defp route(%{method: "GET", path: "/bears/new"} = conn) do
+  defp route(%Conn{method: "GET", path: "/bears/new"} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "form.html"})
   end
 
-  defp route(%{method: "GET", path: "/pages/" <> page} = conn) do
+  defp route(%Conn{method: "GET", path: "/pages/" <> page} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "#{page}.html"})
   end
 
-  defp route(%{method: "GET", path: "/bears/" <> id} = conn) do
+  defp route(%Conn{method: "GET", path: "/bears/" <> id} = conn) do
     bear =
       case id do
         "0" -> "Teddy"
@@ -58,35 +60,26 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "#{bear} Bear"}
   end
 
-  defp route(%{method: "GET", path: "/about"} = conn) do
+  defp route(%Conn{method: "GET", path: "/about"} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "about.html"})
   end
 
-  defp route(%{method: "DELETE", path: "/bears/" <> _id} = conn) do
+  defp route(%Conn{method: "DELETE", path: "/bears/" <> _id} = conn) do
     %{conn | status: 403, resp_body: "It's forbidden to delete bears."}
   end
 
-  defp route(%{path: path} = conn) do
+  defp route(%Conn{path: path} = conn) do
     %{conn | status: 404, resp_body: "The resource for #{path} could not be found."}
   end
 
-  defp format_response(conn) do
+  defp format_response(%Conn{} = conn) do
     """
-    HTTP/1.1 #{conn.status} #{status_reason(conn.status)}
+    HTTP/1.1 #{Conn.full_status(conn)}
     Content-Type: text/html
     Content-Length: #{byte_size(conn.resp_body)}
 
     #{conn.resp_body}
     """
-  end
-
-  defp status_reason(code) do
-    case code do
-      200 -> "OK"
-      404 -> "Not Found"
-      403 -> "Forbidden"
-      500 -> "Internal server error"
-    end
   end
 end
 

@@ -1,7 +1,8 @@
 defmodule Servy.Plugins do
   require Logger
+  alias Servy.Conn
 
-  def track(%{status: status} = conn) do
+  def track(%Conn{status: status} = conn) do
     case status do
       404 ->
         Logger.warn("Someone tried to reach an invalid route: #{conn.path}")
@@ -12,7 +13,7 @@ defmodule Servy.Plugins do
     end
   end
 
-  def rewrite_path(conn) do
+  def rewrite_path(%Conn{} = conn) do
     case conn.path do
       "/wildlife" ->
         rewrite_path(conn, "/wildthings")
@@ -22,12 +23,12 @@ defmodule Servy.Plugins do
     end
   end
 
-  defp rewrite_path(conn, path) do
+  defp rewrite_path(%Conn{} = conn, path) do
     Logger.info("Rewriting path from #{conn.path} to #{path}")
     %{conn | path: path}
   end
 
-  def rewrite_query_params(conn) do
+  def rewrite_query_params(%Conn{} = conn) do
     if String.contains?(conn.path, "?id=") do
       [path, id] = String.split(conn.path, "?id=")
       rewrite_path(conn, "#{path}/#{id}")
@@ -36,14 +37,14 @@ defmodule Servy.Plugins do
     end
   end
 
-  def emojify_resp_body(conn) do
+  def emojify_resp_body(%Conn{} = conn) do
     case conn.status do
       200 -> emojify_resp_body(conn, "😃")
       _ -> conn
     end
   end
 
-  defp emojify_resp_body(conn, emoji) do
+  defp emojify_resp_body(%Conn{} = conn, emoji) do
     %{conn | resp_body: "#{emoji} #{conn.resp_body} #{emoji}"}
   end
 end
