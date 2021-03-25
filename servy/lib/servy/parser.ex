@@ -1,26 +1,45 @@
 defmodule Servy.Parser do
   alias Servy.Conn, as: Conn
 
+  @moduledoc """
+  Parses raw requests into a Servy.Conn Struct
+
+  --------------------------------------------------
+  POST /bears HTTP/1.1
+  Host: example.com
+  User-Agent: ExampleBrowser/1.0
+  Accept: */*
+  Content-Type: application/x-www-form-urlencoded
+  Content-Length: 21
+
+  name=Zoom&type=Brown
+  --------------------------------------------------
+  """
+
   def parse(raw_request) do
-    [request_headers | request_data] = String.split(raw_request, "\n\n")
-    [first_line_request | _headers] = String.split(request_headers, "\n")
+    [request_headers | params] = String.split(raw_request, "\n\n")
+    [first_line_request | headers] = String.split(request_headers, "\n")
+    [method, path, _protocol] = String.split(first_line_request, " ")
 
-    first_line_request
-    |> parse_request()
-    |> parse_request_data(request_data)
+    %Conn{
+      method: method,
+      path: path,
+      headers: parse_headers(headers, %{}),
+      data: parse_params(params)
+    }
   end
 
-  defp parse_request(request) do
-    [method, path, _protocol] = String.split(request, " ")
-    %Conn{method: method, path: path}
+  defp parse_headers([], headers), do: headers
+
+  defp parse_headers([x | xs], headers) do
+    [key, value] = String.split(x, ": ")
+    headers = Map.put(headers, key, value)
+    parse_headers(xs, headers)
   end
 
-  defp parse_request_data(%Conn{} = conn, request_data) do
-    data =
-      List.first(request_data)
-      |> String.trim()
-      |> URI.decode_query()
-
-    %Conn{conn | data: data}
+  defp parse_params(params) do
+    List.first(params)
+    |> String.trim()
+    |> URI.decode_query()
   end
 end

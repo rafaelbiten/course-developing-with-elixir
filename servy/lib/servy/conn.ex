@@ -5,6 +5,7 @@ defmodule Servy.Conn do
             path: "",
             resp_body: "",
             data: %{},
+            headers: %{},
             status: nil
 
   def full_status(%Conn{} = conn) do
