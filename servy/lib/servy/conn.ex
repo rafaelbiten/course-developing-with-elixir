@@ -4,7 +4,7 @@ defmodule Servy.Conn do
   defstruct method: "",
             path: "",
             resp_body: "",
-            data: %{},
+            params: %{},
             headers: %{},
             status: nil
 

@@ -25,7 +25,7 @@ defmodule Servy.Parser do
       method: method,
       path: path,
       headers: parse_headers(headers, %{}),
-      data: parse_params(params)
+      params: parse_params(params)
     }
   end
 

@@ -40,8 +40,8 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  defp route(%Conn{method: "POST", path: "/bears", data: data} = conn) do
-    resp_body = "Created a #{data["type"]} bear named #{data["name"]}"
+  defp route(%Conn{method: "POST", path: "/bears", params: params} = conn) do
+    resp_body = "Created a #{params["type"]} bear named #{params["name"]}"
     %{conn | status: 201, resp_body: resp_body}
   end
 
