@@ -4,6 +4,7 @@ defmodule Servy.Conn do
   defstruct method: "",
             path: "",
             resp_body: "",
+            data: %{},
             status: nil
 
   def full_status(%Conn{} = conn) do
@@ -13,6 +14,7 @@ defmodule Servy.Conn do
   defp status_reason(code) do
     case code do
       200 -> "OK"
+      201 -> "Created"
       404 -> "Not Found"
       403 -> "Forbidden"
       500 -> "Internal server error"

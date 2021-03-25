@@ -40,6 +40,11 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
+  defp route(%Conn{method: "POST", path: "/bears", data: data} = conn) do
+    resp_body = "Created a #{data["type"]} bear named #{data["name"]}"
+    %{conn | status: 201, resp_body: resp_body}
+  end
+
   defp route(%Conn{method: "GET", path: "/bears/new"} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "form.html"})
   end
@@ -154,6 +159,16 @@ Enum.each(
     User-Agent: ExampleBrowser/1.0
     Accept: */*
 
+    """,
+    """
+    POST /bears HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 21
+
+    name=Zoom&type=Brown
     """
   ],
   &Servy.Handler.handle/1
