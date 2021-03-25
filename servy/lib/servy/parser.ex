@@ -21,11 +21,14 @@ defmodule Servy.Parser do
     [first_line_request | headers] = String.split(request_headers, "\n")
     [method, path, _protocol] = String.split(first_line_request, " ")
 
+    headers = parse_headers(headers, %{})
+    params = parse_params(headers["Content-Type"], params)
+
     %Conn{
       method: method,
       path: path,
-      headers: parse_headers(headers, %{}),
-      params: parse_params(params)
+      headers: headers,
+      params: params
     }
   end
 
@@ -37,9 +40,9 @@ defmodule Servy.Parser do
     parse_headers(xs, headers)
   end
 
-  defp parse_params(params) do
-    List.first(params)
-    |> String.trim()
-    |> URI.decode_query()
+  defp parse_params("application/x-www-form-urlencoded", params) do
+    List.first(params) |> String.trim() |> URI.decode_query()
   end
+
+  defp parse_params(_, _), do: %{}
 end
