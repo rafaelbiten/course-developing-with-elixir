@@ -4,6 +4,8 @@ defmodule Servy.Handler do
   Serving as a bit of a playground to try different things/approaches.
   """
 
+  alias Servy.BearCtrl
+
   # import Servy.Plugins,
   #   only: [rewrite_query_params: 1, rewrite_path: 1, track: 1, emojify_resp_body: 1]
   #   except: [rewrite_query_params: 1]
@@ -37,12 +39,16 @@ defmodule Servy.Handler do
   end
 
   defp route(%Conn{method: "GET", path: "/bears"} = conn) do
-    %{conn | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+    BearCtrl.index(conn)
   end
 
-  defp route(%Conn{method: "POST", path: "/bears", params: params} = conn) do
-    resp_body = "Created a #{params["type"]} bear named #{params["name"]}"
-    %{conn | status: 201, resp_body: resp_body}
+  defp route(%Conn{method: "GET", path: "/bears/" <> id} = conn) do
+    params = Map.put(conn.params, "id", id)
+    BearCtrl.show(conn, params)
+  end
+
+  defp route(%Conn{method: "POST", path: "/bears"} = conn) do
+    BearCtrl.create(conn, conn.params)
   end
 
   defp route(%Conn{method: "GET", path: "/bears/new"} = conn) do
@@ -51,18 +57,6 @@ defmodule Servy.Handler do
 
   defp route(%Conn{method: "GET", path: "/pages/" <> page} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "#{page}.html"})
-  end
-
-  defp route(%Conn{method: "GET", path: "/bears/" <> id} = conn) do
-    bear =
-      case id do
-        "0" -> "Teddy"
-        "1" -> "Smokey"
-        "2" -> "Paddington"
-        _ -> "Unknown"
-      end
-
-    %{conn | status: 200, resp_body: "#{bear} Bear"}
   end
 
   defp route(%Conn{method: "GET", path: "/about"} = conn) do
