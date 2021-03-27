@@ -17,3 +17,18 @@ end
 |> Enum.to_list()
 |> Playground.Recurse.triple()
 |> IO.inspect()
+
+sum = &(&1 + &2)
+triple = &(&1 * 3)
+
+1..5
+# |> Enum.reduce(fn x, acc -> x + acc end)
+# |> Enum.reduce(&(&1 + &2))
+|> Enum.reduce(sum)
+|> IO.puts()
+
+1..5
+# |> Enum.map(fn x -> x * 3 end)
+# |> Enum.map(&(&1 * 3))
+|> Enum.map(triple)
+|> IO.inspect()
