@@ -1,6 +1,7 @@
 defmodule Servy.Wildthings do
   alias Servy.Bear
 
+  @spec list_bears() :: [Bear.t()]
   def list_bears do
     [
       %Bear{id: 1, name: "Bear1", type: "Type1", hibernating: true},
@@ -16,6 +17,7 @@ defmodule Servy.Wildthings do
     ]
   end
 
+  @spec get_bear(integer()) :: Bear.t() | nil
   def get_bear(id) do
     byId = fn x -> x.id == id end
     list_bears() |> Enum.find(byId)
