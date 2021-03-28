@@ -8,6 +8,15 @@ defmodule Servy.Conn do
             headers: %{},
             status: nil
 
+  @type t :: %__MODULE__{
+          method: String.t(),
+          path: String.t(),
+          resp_body: String.t(),
+          params: map(),
+          headers: map(),
+          status: integer()
+        }
+
   def full_status(%Conn{} = conn) do
     "#{conn.status} #{status_reason(conn.status)}"
   end
