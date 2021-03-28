@@ -4,9 +4,13 @@ defmodule Servy.BearCtrl do
 
   @spec index(Conn.t()) :: Conn.t()
   def index(%Conn{} = conn) do
+    bears_by_name_asc = fn bear1, bear2 -> bear1.name <= bear2.name end
+    bear_to_list_item = fn bear -> "<li>#{bear.name} - #{bear.type}</li>" end
+
     bear_items =
       Wildthings.list_bears()
-      |> Enum.map(fn bear -> "<li>#{bear.name} - #{bear.type}</li>" end)
+      |> Enum.sort(bears_by_name_asc)
+      |> Enum.map(bear_to_list_item)
       |> Enum.join()
 
     %{conn | status: 200, resp_body: "<ul>#{bear_items}</ul>"}
