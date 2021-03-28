@@ -51,6 +51,11 @@ defmodule Servy.Handler do
     BearCtrl.create(conn, conn.params)
   end
 
+  defp route(%Conn{method: "DELETE", path: "/bears/" <> id} = conn) do
+    params = Map.put(conn, "id", id)
+    BearCtrl.delete(conn, params)
+  end
+
   defp route(%Conn{method: "GET", path: "/bears/new"} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "form.html"})
   end
@@ -61,10 +66,6 @@ defmodule Servy.Handler do
 
   defp route(%Conn{method: "GET", path: "/about"} = conn) do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "about.html"})
-  end
-
-  defp route(%Conn{method: "DELETE", path: "/bears/" <> _id} = conn) do
-    %{conn | status: 403, resp_body: "It's forbidden to delete bears."}
   end
 
   defp route(%Conn{path: path} = conn) do

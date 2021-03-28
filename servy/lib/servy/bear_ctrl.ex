@@ -27,4 +27,8 @@ defmodule Servy.BearCtrl do
     resp_body = "Created a #{type} bear named #{name}"
     %{conn | status: 201, resp_body: resp_body}
   end
+
+  def delete(%Conn{} = conn, _params) do
+    %{conn | status: 403, resp_body: "It's forbidden to delete bears."}
+  end
 end
