@@ -2,6 +2,7 @@ defmodule Servy.BearCtrl do
   alias Servy.Conn
   alias Servy.Wildthings
 
+  @spec index(Conn.t()) :: Conn.t()
   def index(%Conn{} = conn) do
     bear_items =
       Wildthings.list_bears()
@@ -13,7 +14,7 @@ defmodule Servy.BearCtrl do
 
   def show(%Conn{} = conn, %{"id" => id} = _params) do
     case Wildthings.get_bear(id) do
-      nil -> %{conn | status: 404, resp_body: "Unknown Bear with id '#{id}'"}
+      nil -> %{conn | status: 404, resp_body: "Bear with id '#{id}' not found!"}
       bear -> %{conn | status: 200, resp_body: "#{bear.name} Bear"}
     end
   end

@@ -17,9 +17,14 @@ defmodule Servy.Wildthings do
     ]
   end
 
-  @spec get_bear(integer()) :: Bear.t() | nil
+  @spec get_bear(term()) :: Bear.t() | nil
   def get_bear(id) do
-    byId = fn x -> x.id == id end
+    byId = fn x ->
+      if is_integer(id),
+        do: id == x.id,
+        else: id == Integer.to_string(x.id)
+    end
+
     list_bears() |> Enum.find(byId)
   end
 end
