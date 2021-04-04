@@ -1,4 +1,10 @@
 defmodule Playground.Comprehensions do
+  @ranks ["A", "2", "3", "J", "Q", "K"]
+  @suits ["♦️", "♠️", "♥️", "♣️"]
+
+  def deal_hand() do
+    for rank <- @ranks, suit <- @suits, do: rank <> suit
+  end
 end
 
 list = Enum.to_list(1..3)
@@ -26,3 +32,5 @@ _ =
   |> IO.inspect()
 
 # ---------------------------------------
+
+Playground.Comprehensions.deal_hand() |> IO.inspect()
