@@ -46,16 +46,10 @@ defmodule Servy.HandlerTest do
     \r
     """
 
-    response = Handler.handle(request)
-
-    assert remove_whitespaces(response) ==
-             remove_whitespaces("""
-             HTTP/1.1 200 OK\r
-             Content-Type: text/html\r
-             Content-Length: 83\r
-             \r
-             😃<h1>ShowingBear</h1><p>IsTeddyhibernating?<strong>true</strong></p>😃
-             """)
+    assert Handler.handle(request)
+           |> contains("200 OK")
+           |> contains("Showing Bear")
+           |> contains("Is Teddy hibernating?")
   end
 
   test "DELETE /bears/1" do
@@ -93,7 +87,10 @@ defmodule Servy.HandlerTest do
            """
   end
 
-  defp remove_whitespaces(text) do
-    String.replace(text, ~r{\s}, "")
+  defp contains(content, pattern) do
+    case String.contains?(content, pattern) do
+      true -> content
+      false -> raise "Content does not contain pattern: #{pattern}"
+    end
   end
 end
