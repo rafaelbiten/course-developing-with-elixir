@@ -4,6 +4,7 @@ defmodule Servy.Handler do
   Serving as a bit of a playground to try different things/approaches.
   """
 
+  alias Servy.BearApi
   alias Servy.BearCtrl
 
   # import Servy.Plugins,
@@ -34,6 +35,10 @@ defmodule Servy.Handler do
 
   defp route(%Conn{method: "GET", path: "/wildthings"} = conn) do
     %{conn | status: 200, resp_body: "Bears, Leões, Tigers"}
+  end
+
+  defp route(%Conn{method: "GET", path: "/api/bears"} = conn) do
+    BearApi.index(conn)
   end
 
   defp route(%Conn{method: "GET", path: "/bears"} = conn) do
@@ -73,7 +78,7 @@ defmodule Servy.Handler do
   defp format_response(%Conn{} = conn) do
     """
     HTTP/1.1 #{Conn.full_status(conn)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conn.content_type}\r
     Content-Length: #{byte_size(conn.resp_body)}\r
     \r
     #{conn.resp_body}

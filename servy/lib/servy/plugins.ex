@@ -45,6 +45,9 @@ defmodule Servy.Plugins do
   end
 
   defp emojify_resp_body(%Conn{} = conn, emoji) do
-    %{conn | resp_body: "#{emoji} #{conn.resp_body} #{emoji}"}
+    case conn.content_type do
+      "text/html" -> %{conn | resp_body: "#{emoji} #{conn.resp_body} #{emoji}"}
+      _ -> conn
+    end
   end
 end
