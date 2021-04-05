@@ -17,8 +17,8 @@ defmodule Servy.Parser do
   """
 
   def parse(raw_request) do
-    [request_headers | params] = String.split(raw_request, "\n\n")
-    [first_line_request | headers] = String.split(request_headers, "\n")
+    [request_headers | params] = String.split(raw_request, "\r\n\r\n")
+    [first_line_request | headers] = String.split(request_headers, "\r\n")
     [method, path, _protocol] = String.split(first_line_request, " ")
 
     headers = parse_headers(headers)

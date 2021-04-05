@@ -5,13 +5,13 @@ defmodule Servy.ParserTest do
 
   test "parses a raw_request into a %Servy.Conn{}" do
     raw_request = """
-    POST /bears HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-    Content-Type: application/x-www-form-urlencoded
-    Content-Length: 21
-
+    POST /bears HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    Content-Type: application/x-www-form-urlencoded\r
+    Content-Length: 21\r
+    \r
     name=Zoom&type=Brown
     """
 
@@ -33,11 +33,11 @@ defmodule Servy.ParserTest do
 
   test "parses a raw_request empty body into a params empty map" do
     raw_request = """
-    GET /bear/1 HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-    Content-Type: application/x-www-form-urlencoded
+    GET /bear/1 HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    Content-Type: application/x-www-form-urlencoded\r
     Content-Length: 21
     """
 

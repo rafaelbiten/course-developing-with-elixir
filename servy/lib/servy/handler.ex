@@ -22,14 +22,12 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> Servy.Parser.parse()
-    |> IO.inspect()
     |> Servy.Plugins.rewrite_query_params()
     |> Servy.Plugins.rewrite_path()
     |> route
     |> Servy.Plugins.track()
     |> Servy.Plugins.emojify_resp_body()
     |> format_response
-    |> IO.puts()
   end
 
   # Implementation
@@ -74,97 +72,11 @@ defmodule Servy.Handler do
 
   defp format_response(%Conn{} = conn) do
     """
-    HTTP/1.1 #{Conn.full_status(conn)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(conn.resp_body)}
-
+    HTTP/1.1 #{Conn.full_status(conn)}\r
+    Content-Type: text/html\r
+    Content-Length: #{byte_size(conn.resp_body)}\r
+    \r
     #{conn.resp_body}
     """
   end
 end
-
-Enum.each(
-  [
-    """
-    GET /wildthings HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /wildlife HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /bears?id=1 HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /unknown HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /bears HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /bears/1 HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    DELETE /bears/1 HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /about HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /bears/new HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    GET /pages/about HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-
-    """,
-    """
-    POST /bears HTTP/1.1
-    Host: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-    Content-Type: application/x-www-form-urlencoded
-    Content-Length: 21
-
-    name=Zoom&type=Brown
-    """
-  ],
-  &Servy.Handler.handle/1
-)
