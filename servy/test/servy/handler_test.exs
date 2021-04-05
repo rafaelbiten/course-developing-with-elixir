@@ -20,6 +20,7 @@ defmodule Servy.HandlerTest do
            """
   end
 
+  @tag :capture_log
   test "GET /wildlife rewrites path to /wildthings" do
     request = """
     GET /wildlife HTTP/1.1\r
@@ -70,6 +71,7 @@ defmodule Servy.HandlerTest do
            """
   end
 
+  @tag :capture_log
   test "404s" do
     request = """
     GET /unknown HTTP/1.1\r
