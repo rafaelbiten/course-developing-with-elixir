@@ -3,8 +3,8 @@ defmodule Servy.Conn do
 
   defstruct method: "",
             path: "",
-            content_type: "text/html",
             resp_body: "",
+            resp_content_type: "text/html",
             params: %{},
             headers: %{},
             status: nil
@@ -12,8 +12,8 @@ defmodule Servy.Conn do
   @type t :: %__MODULE__{
           method: String.t(),
           path: String.t(),
-          content_type: String.t(),
           resp_body: String.t(),
+          resp_content_type: String.t(),
           params: map(),
           headers: map(),
           status: integer()

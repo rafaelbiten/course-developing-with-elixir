@@ -78,7 +78,7 @@ defmodule Servy.Handler do
   defp format_response(%Conn{} = conn) do
     """
     HTTP/1.1 #{Conn.full_status(conn)}\r
-    Content-Type: #{conn.content_type}\r
+    Content-Type: #{conn.resp_content_type}\r
     Content-Length: #{byte_size(conn.resp_body)}\r
     \r
     #{conn.resp_body}
