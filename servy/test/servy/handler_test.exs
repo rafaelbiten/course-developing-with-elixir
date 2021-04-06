@@ -3,6 +3,8 @@ defmodule Servy.HandlerTest do
   doctest Servy.Handler
   alias Servy.Handler
 
+  import TestHelper, only: [remove_whitespace: 1, contains: 2]
+
   test "GET /wildthings" do
     request = """
     GET /wildthings HTTP/1.1\r
@@ -139,16 +141,5 @@ defmodule Servy.HandlerTest do
            \r
            Created a Polar bear named Breezly!
            """
-  end
-
-  defp contains(content, pattern) do
-    case String.contains?(content, pattern) do
-      true -> content
-      false -> raise "Content does not contain pattern: #{pattern}"
-    end
-  end
-
-  defp remove_whitespace(string) do
-    String.replace(string, ~r{\s}, "")
   end
 end
