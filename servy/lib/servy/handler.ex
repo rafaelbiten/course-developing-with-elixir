@@ -54,6 +54,10 @@ defmodule Servy.Handler do
     BearCtrl.create(conn, conn.params)
   end
 
+  defp route(%Conn{method: "POST", path: "/api/bears"} = conn) do
+    BearApi.create(conn, conn.params)
+  end
+
   defp route(%Conn{method: "DELETE", path: "/bears/" <> id} = conn) do
     params = Map.put(conn, "id", id)
     BearCtrl.delete(conn, params)
