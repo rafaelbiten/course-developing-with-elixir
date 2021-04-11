@@ -1,4 +1,8 @@
 defmodule Playground.Recurse do
+  @moduledoc """
+  Working with lists and recursion
+  """
+
   def sum(list) when is_list(list), do: sum(list, 0)
   def sum([x | xs], total), do: sum(xs, total + x)
   def sum([], total), do: total
@@ -21,7 +25,7 @@ end
 1..5
 |> Enum.to_list()
 |> Playground.Recurse.triple()
-|> IO.inspect()
+|> IO.puts()
 
 sum = &(&1 + &2)
 triple = &(&1 * 3)
@@ -30,19 +34,15 @@ triple = &(&1 * 3)
 # |> Enum.reduce(fn x, acc -> x + acc end)
 # |> Enum.reduce(&(&1 + &2))
 |> Enum.reduce(sum)
-|> IO.puts()
 
 1..5
 # |> Enum.map(fn x -> x * 3 end)
 # |> Enum.map(&(&1 * 3))
 |> Enum.map(triple)
-|> IO.inspect()
 
 1..6
 |> Enum.to_list()
 |> Playground.Recurse.map(triple)
-|> IO.inspect()
 
 Playground.Recurse.map(["hey", "ho"], &"I say #{&1}! ")
 |> Enum.join()
-|> IO.puts()

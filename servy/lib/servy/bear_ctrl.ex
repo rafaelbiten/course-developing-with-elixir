@@ -1,7 +1,9 @@
 defmodule Servy.BearCtrl do
+  @moduledoc false
+
+  alias Servy.BearView
   alias Servy.Conn
   alias Servy.Wildthings
-  alias Servy.BearView
 
   @spec index(Conn.t()) :: Conn.t()
   def index(%Conn{} = conn) do

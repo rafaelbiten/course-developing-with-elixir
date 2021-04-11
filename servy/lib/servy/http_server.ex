@@ -1,4 +1,6 @@
 defmodule Servy.HttpServer do
+  @moduledoc false
+
   def start(port) when is_integer(port) and port > 1023 do
     # :binary - delivers data as binaries
     # packet: :raw - delivers entire packet as it is received

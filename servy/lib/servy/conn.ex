@@ -1,4 +1,6 @@
 defmodule Servy.Conn do
+  @moduledoc false
+
   alias Servy.Conn
 
   defstruct method: "",

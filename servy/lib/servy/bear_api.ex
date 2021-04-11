@@ -1,4 +1,6 @@
 defmodule Servy.BearApi do
+  @moduledoc false
+
   alias Servy.Conn
   alias Servy.Wildthings
 

@@ -1,4 +1,6 @@
 defmodule Servy.Db do
+  @moduledoc false
+
   @db_path Path.expand("db", File.cwd!())
   @bears Path.join(@db_path, "bears.json")
 
@@ -12,7 +14,7 @@ defmodule Servy.Db do
         decode_fn.(entities)
 
       {:error, reason} ->
-        IO.inspect("Can't read #{table}: #{reason}")
+        IO.puts("Can't read #{table}: #{reason}")
         []
     end
   end

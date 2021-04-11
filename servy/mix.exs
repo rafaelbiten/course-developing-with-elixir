@@ -37,8 +37,8 @@ defmodule Servy.MixProject do
 
   defp aliases do
     [
-      check: ["test", "credo"],
-      check_all: ["test", "dialyzer", "credo"],
+      check: ["test", "credo --strict"],
+      check_all: ["test", "dialyzer", "credo --strict"],
       get: ["deps.get", "deps.compile"]
     ]
   end

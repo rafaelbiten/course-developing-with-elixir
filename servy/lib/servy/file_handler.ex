@@ -1,4 +1,9 @@
 defmodule Servy.FileHandler do
+  @moduledoc """
+  Module to handle reading files from the file system and returning
+  them as the response body. Handles missing files and unexpected error
+  """
+
   def handle_file(conn, %{path: path, file: file}) do
     result =
       Path.join(path, file)

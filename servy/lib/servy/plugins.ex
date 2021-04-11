@@ -1,4 +1,6 @@
 defmodule Servy.Plugins do
+  @moduledoc false
+
   require Logger
   alias Servy.Conn
 
