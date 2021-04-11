@@ -9,7 +9,11 @@ defmodule Servy.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
-      dialyzer: [plt_add_apps: [:mix]]
+      dialyzer: [plt_add_apps: [:mix]],
+      preferred_cli_env: [
+        check: :test,
+        check_all: :test
+      ]
     ]
   end
 
@@ -24,6 +28,7 @@ defmodule Servy.MixProject do
   defp deps do
     [
       {:cortex, "~> 0.6.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
       {:poison, "~> 4.0"}
@@ -32,7 +37,8 @@ defmodule Servy.MixProject do
 
   defp aliases do
     [
-      check: ["dialyzer", "test"],
+      check: ["test", "credo"],
+      check_all: ["test", "dialyzer", "credo"],
       get: ["deps.get", "deps.compile"]
     ]
   end
