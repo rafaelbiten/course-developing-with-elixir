@@ -36,7 +36,7 @@ defmodule Servy.HttpServer do
     # 0 to receive all available bytes
     {:ok, request} = :gen_tcp.recv(client_socket, 0)
 
-    IO.puts("Received request: \n")
+    IO.puts("Request received: \n")
     IO.puts(request)
 
     request
@@ -71,7 +71,7 @@ defmodule Servy.HttpServer do
     gen_tcp:listen  | :gen_tcp.listen
     "hello"         | 'hello'
   """
-  def server do
+  def _server do
     {:ok, lsock} = :gen_tcp.listen(5678, [:binary, packet: 0, active: false])
     {:ok, sock} = :gen_tcp.accept(lsock)
     {:ok, bin} = :gen_tcp.recv(sock, 0)

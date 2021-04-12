@@ -33,6 +33,19 @@ defmodule Servy.Handler do
 
   # Implementation
 
+  defp route(%Conn{method: "GET", path: "/raise"} = _conn) do
+    raise "Unhandled Server Error"
+  end
+
+  defp route(%Conn{method: "GET", path: "/sleep/" <> time} = conn) do
+    time
+    |> String.to_integer()
+    |> :timer.seconds()
+    |> :timer.sleep()
+
+    %{conn | status: 200, resp_body: "Done!"}
+  end
+
   defp route(%Conn{method: "GET", path: "/wildthings"} = conn) do
     %{conn | status: 200, resp_body: "Bears, Leões, Tigers"}
   end
