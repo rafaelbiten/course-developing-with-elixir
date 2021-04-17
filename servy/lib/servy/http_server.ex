@@ -21,25 +21,30 @@ defmodule Servy.HttpServer do
 
     IO.puts("Connection stablished!\n")
 
-    serve(client_socket)
+    spawn(fn -> serve(client_socket) end)
+
     listen(socket)
   end
 
   defp serve(client_socket) do
     client_socket
     |> receive_request
-    |> Servy.Handler.handle
+    |> Servy.Handler.handle()
     |> send_response(client_socket)
   end
 
   defp receive_request(client_socket) do
     # 0 to receive all available bytes
-    {:ok, request} = :gen_tcp.recv(client_socket, 0)
+    case :gen_tcp.recv(client_socket, 0) do
+      {:ok, request} ->
+        IO.puts("Request received: \n")
+        IO.puts(request)
+        request
 
-    IO.puts("Request received: \n")
-    IO.puts(request)
-
-    request
+      {:error, reason} ->
+        IO.puts("Request error: \n")
+        reason
+    end
   end
 
   defp send_response(response, client_socket) do
