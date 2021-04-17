@@ -3,10 +3,12 @@ defmodule Servy.HttpServer do
 
   def start(port) when is_integer(port) and port > 1023 do
     # :binary - delivers data as binaries
+    # backlog - queue size of max connection requests waiting to be handled
     # packet: :raw - delivers entire packet as it is received
     # active: false - waits for us to call :gen_tcp.recv/2 to deliver messages
     # reuseaddr: true - reuses address if the listener crashes
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
+    options = [:binary, backlog: 10, packet: :raw, active: false, reuseaddr: true]
+    {:ok, socket} = :gen_tcp.listen(port, options)
 
     IO.puts("\nListening on port #{port}...")
 
