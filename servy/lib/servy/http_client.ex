@@ -8,16 +8,24 @@ defmodule Servy.HttpClient do
   def send(request) do
     address = 'localhost'
     options = [:binary, packet: :raw, active: false]
-    {:ok, socket} = :gen_tcp.connect(address, 4000, options)
 
-    :ok = :gen_tcp.send(socket, request)
+    case :gen_tcp.connect(address, 4000, options) do
+      {:ok, socket} ->
+        :ok = :gen_tcp.send(socket, request)
 
-    case :gen_tcp.recv(socket, 0) do
-      {:ok, response} -> IO.inspect(response, label: "✅ Response")
-      {:error, reason} -> IO.inspect(reason, label: "🔥 Reason")
+        case :gen_tcp.recv(socket, 0) do
+          {:ok, response} -> IO.inspect(response, label: "✅ Response")
+          {:error, reason} -> IO.inspect(reason, label: "🔥 Reason")
+        end
+
+        :ok = :gen_tcp.close(socket)
+
+      {:error, reason} ->
+        raise """
+        Failed to send request with reason '#{reason}'.
+        Please make sure the server is running.
+        """
     end
-
-    :ok = :gen_tcp.close(socket)
   end
 
   def send, do: send(:request)
