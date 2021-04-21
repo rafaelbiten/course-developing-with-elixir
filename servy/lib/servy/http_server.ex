@@ -1,6 +1,8 @@
 defmodule Servy.HttpServer do
   @moduledoc false
 
+  require Logger
+
   def start(port) when is_integer(port) and port > 1023 do
     # :binary - delivers data as binaries
     # backlog - queue size of max connection requests waiting to be handled
@@ -10,18 +12,18 @@ defmodule Servy.HttpServer do
     options = [:binary, backlog: 10, packet: :raw, active: false, reuseaddr: true]
     {:ok, socket} = :gen_tcp.listen(port, options)
 
-    IO.puts("\nListening on port #{port}...")
+    Logger.info("\nListening on port #{port}...")
 
     listen(socket)
   end
 
   defp listen(socket) do
-    IO.puts("Waiting to accept a client connection...\n")
+    Logger.info("Waiting to accept a client connection...\n")
 
     # Creates a new client_socket to process the request and free up the socket
     {:ok, client_socket} = :gen_tcp.accept(socket)
 
-    IO.puts("Connection stablished!\n")
+    Logger.info("Connection stablished!\n")
 
     spawn(fn -> serve(client_socket) end)
 
@@ -39,12 +41,12 @@ defmodule Servy.HttpServer do
     # 0 to receive all available bytes
     case :gen_tcp.recv(client_socket, 0) do
       {:ok, request} ->
-        IO.puts("Request received: \n")
-        IO.puts(request)
+        Logger.info("Request received: \n")
+        Logger.info(request)
         request
 
       {:error, reason} ->
-        IO.puts("Request error: \n")
+        Logger.info("Request error: \n")
         reason
     end
   end
@@ -52,8 +54,8 @@ defmodule Servy.HttpServer do
   defp send_response(response, client_socket) do
     :ok = :gen_tcp.send(client_socket, response)
 
-    IO.puts("Response sent:\n")
-    IO.puts(response)
+    Logger.info("Response sent:\n")
+    Logger.info(response)
 
     :gen_tcp.close(client_socket)
   end

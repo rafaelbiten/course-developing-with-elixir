@@ -10,8 +10,9 @@ defmodule Mix.Tasks.Serve do
 
   @impl Mix.Task
   def run(args) do
-    parse_args(args)
-    |> Servy.HttpServer.start()
+    System.no_halt(true)
+    spawn(Servy.HttpServer, :start, [parse_args(args)])
+    Mix.shell().info("Server is starting...")
   end
 
   defp parse_args([]), do: 4000
