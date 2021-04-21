@@ -1,4 +1,8 @@
 defmodule Servy.HttpClient do
+  @moduledoc false
+
+  require Logger
+
   def send(:sleep, seconds), do: sleep_and_send(seconds)
   def send(:sleep), do: sleep_and_send(3)
 
@@ -13,12 +17,18 @@ defmodule Servy.HttpClient do
       {:ok, socket} ->
         :ok = :gen_tcp.send(socket, request)
 
-        case :gen_tcp.recv(socket, 0) do
-          {:ok, response} -> IO.inspect(response, label: "✅ Response")
-          {:error, reason} -> IO.inspect(reason, label: "🔥 Reason")
-        end
-
+        result = :gen_tcp.recv(socket, 0)
         :ok = :gen_tcp.close(socket)
+
+        case result do
+          {:ok, response} ->
+            Logger.info(response)
+            response
+
+          {:error, reason} ->
+            Logger.error(reason)
+            reason
+        end
 
       {:error, reason} ->
         raise """
