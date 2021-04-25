@@ -3,46 +3,32 @@ defmodule Playground.Recurse do
   Working with lists and recursion
   """
 
-  def sum(list) when is_list(list), do: sum(list, 0)
-  def sum([x | xs], total), do: sum(xs, total + x)
-  def sum([], total), do: total
+  def reduce([h | t], acc, f), do: reduce(t, f.(h, acc), f)
+  def reduce([], acc, _f), do: acc
 
-  def triple(list) when is_list(list), do: triple(list, [])
-  def triple([x | xs], tripled_list), do: triple(xs, [x * 3 | tripled_list])
-  def triple([], tripled_list), do: Enum.reverse(tripled_list)
+  # def map([h | t], f), do: [f.(h) | map(t, f)]
+  # def map([], _f), do: []
 
-  def map([], _f), do: []
-  def map(list, f), do: map(list, f, [])
-  defp map([x | xs], f, result), do: map(xs, f, [f.(x) | result])
-  defp map([], _f, result), do: Enum.reverse(result)
+  # map in terms of reduce
+  def map(list, f) do
+    reduce(list, [], fn x, acc -> [f.(x) | acc] end)
+    |> :lists.reverse()
+  end
+
+  def filter(list, predicate_f) do
+    reduce(list, [], fn x, acc ->
+      case predicate_f.(x) do
+        true -> [x | acc]
+        _ -> acc
+      end
+    end)
+    |> :lists.reverse()
+  end
+
+  def sum(list, initial \\ 0), do: reduce(list, initial, &(&1 + &2))
+  def triple(list), do: map(list, &(&1 * 3))
+
+  # predicate functions
+  def is_odd?(n), do: :math.fmod(n, 2) != 0
+  def is_even?(n), do: :math.fmod(n, 2) == 0
 end
-
-1..5
-|> Enum.to_list()
-|> Playground.Recurse.sum()
-|> IO.puts()
-
-1..5
-|> Enum.to_list()
-|> Playground.Recurse.triple()
-|> IO.puts()
-
-sum = &(&1 + &2)
-triple = &(&1 * 3)
-
-1..5
-# |> Enum.reduce(fn x, acc -> x + acc end)
-# |> Enum.reduce(&(&1 + &2))
-|> Enum.reduce(sum)
-
-1..5
-# |> Enum.map(fn x -> x * 3 end)
-# |> Enum.map(&(&1 * 3))
-|> Enum.map(triple)
-
-1..6
-|> Enum.to_list()
-|> Playground.Recurse.map(triple)
-
-Playground.Recurse.map(["hey", "ho"], &"I say #{&1}! ")
-|> Enum.join()
