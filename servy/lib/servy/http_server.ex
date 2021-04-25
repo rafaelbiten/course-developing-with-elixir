@@ -45,10 +45,6 @@ defmodule Servy.HttpServer do
         Logger.info("Request received: \n")
         Logger.info(request)
         request
-
-      error ->
-        Logger.info("Request error: \n")
-        error
     end
   end
 
