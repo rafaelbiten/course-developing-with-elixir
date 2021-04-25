@@ -27,7 +27,7 @@ defmodule Servy.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cortex, "~> 0.6.0", only: [:dev, :test], runtime: false},
+      {:cortex, "~> 0.6.0", only: [:dev, :test]},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
