@@ -25,7 +25,8 @@ defmodule Servy.HttpServer do
 
     Logger.info("Connection stablished!\n")
 
-    spawn(fn -> serve(client_socket) end)
+    pid = spawn(fn -> serve(client_socket) end)
+    :gen_tcp.controlling_process(client_socket, pid)
 
     listen(socket)
   end
@@ -45,9 +46,9 @@ defmodule Servy.HttpServer do
         Logger.info(request)
         request
 
-      {:error, reason} ->
+      error ->
         Logger.info("Request error: \n")
-        reason
+        error
     end
   end
 

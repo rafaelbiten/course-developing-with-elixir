@@ -26,7 +26,7 @@ defmodule Servy.HttpClient do
             response
 
           {:error, reason} ->
-            Logger.error(reason)
+            Logger.error("Failed with reason: #{reason}")
             reason
         end
 
