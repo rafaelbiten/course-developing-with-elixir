@@ -15,7 +15,7 @@ defmodule Servy.HandlerTest do
 
     assert Handler.handle(request) == """
            HTTP/1.1 200 OK\r
-           Content-Type: text/html\r
+           Content-Type: text/html;charset=utf-8\r
            Content-Length: 31\r
            \r
            😃 Bears, Leões, Tigers 😃
@@ -33,7 +33,7 @@ defmodule Servy.HandlerTest do
 
     assert Handler.handle(request) == """
            HTTP/1.1 200 OK\r
-           Content-Type: text/html\r
+           Content-Type: text/html;charset=utf-8\r
            Content-Length: 31\r
            \r
            😃 Bears, Leões, Tigers 😃
@@ -66,7 +66,7 @@ defmodule Servy.HandlerTest do
 
     assert Handler.handle(request) == """
            HTTP/1.1 403 Forbidden\r
-           Content-Type: text/html\r
+           Content-Type: text/html;charset=utf-8\r
            Content-Length: 31\r
            \r
            It's forbidden to delete bears.
@@ -84,7 +84,7 @@ defmodule Servy.HandlerTest do
 
     assert Handler.handle(request) == """
            HTTP/1.1 404 Not Found\r
-           Content-Type: text/html\r
+           Content-Type: text/html;charset=utf-8\r
            Content-Length: 45\r
            \r
            The resource for /unknown could not be found.
@@ -104,7 +104,7 @@ defmodule Servy.HandlerTest do
 
     expected_response = """
     HTTP/1.1 200 OK\r
-    Content-Type: application/json\r
+    Content-Type: application/json;charset=utf-8\r
     Content-Length: 605\r
     \r
     [{"type":"Brown","name":"Teddy","id":1,"hibernating":true},
@@ -136,7 +136,7 @@ defmodule Servy.HandlerTest do
 
     assert Handler.handle(request) == """
            HTTP/1.1 201 Created\r
-           Content-Type: text/html\r
+           Content-Type: text/html;charset=utf-8\r
            Content-Length: 35\r
            \r
            Created a Polar bear named Breezly!
