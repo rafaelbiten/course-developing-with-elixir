@@ -9,12 +9,22 @@ defmodule Servy.JsonPlaceholderApi do
   def index(%Conn{} = conn) do
     {:ok, response} = get("/users")
     # resp_body = Poison.encode!(response.body)
-    %{conn | status: 200, resp_body: response.body, resp_content_type: "application/json"}
+    %{
+      conn
+      | status: response.status,
+        resp_body: response.body,
+        resp_content_type: "application/json"
+    }
   end
 
   def get_user(%Conn{} = conn, %{"id" => id} = _params) do
     {:ok, response} = get("/users/" <> id)
     # resp_body = Poison.encode!(response.body)
-    %{conn | status: 200, resp_body: response.body, resp_content_type: "application/json"}
+    %{
+      conn
+      | status: response.status,
+        resp_body: response.body,
+        resp_content_type: "application/json"
+    }
   end
 end
