@@ -6,6 +6,7 @@ defmodule Servy.Handler do
 
   alias Servy.BearApi
   alias Servy.BearCtrl
+  alias Servy.VideoCam
 
   # import Servy.Plugins,
   #   only: [rewrite_query_params: 1, rewrite_path: 1, track: 1, emojify_resp_body: 1]
@@ -44,6 +45,16 @@ defmodule Servy.Handler do
     |> :timer.sleep()
 
     %{conn | status: 200, resp_body: "Done!"}
+  end
+
+  defp route(%Conn{method: "GET", path: "/snapshots"} = conn) do
+    snapshot1 = VideoCam.get_snapshot("cam-1")
+    snapshot2 = VideoCam.get_snapshot("cam-2")
+    snapshot3 = VideoCam.get_snapshot("cam-3")
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %{conn | status: 200, resp_body: inspect(snapshots)}
   end
 
   defp route(%Conn{method: "GET", path: "/wildthings"} = conn) do
