@@ -11,7 +11,7 @@ defmodule Servy.JsonPlaceholderApi do
   end
 
   def get_user(%Conn{} = conn, %{"id" => id} = _params) do
-    get("/users/" <> id) |> handle_response(conn)
+    get("/users/" <> URI.encode(id)) |> handle_response(conn)
   end
 
   defp handle_response({:ok, response}, %Conn{} = conn),
