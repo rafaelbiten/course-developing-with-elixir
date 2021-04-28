@@ -7,6 +7,7 @@ defmodule Servy.Handler do
   alias Servy.BearApi
   alias Servy.BearCtrl
   alias Servy.VideoCam
+  alias Servy.JsonPlaceholderApi
 
   # import Servy.Plugins,
   #   only: [rewrite_query_params: 1, rewrite_path: 1, track: 1, emojify_resp_body: 1]
@@ -63,6 +64,15 @@ defmodule Servy.Handler do
 
   defp route(%Conn{method: "GET", path: "/api/bears"} = conn) do
     BearApi.index(conn)
+  end
+
+  defp route(%Conn{method: "GET", path: "/api/users"} = conn) do
+    JsonPlaceholderApi.index(conn)
+  end
+
+  defp route(%Conn{method: "GET", path: "/api/users/" <> id} = conn) do
+    params = Map.put(conn.params, "id", id)
+    JsonPlaceholderApi.get_user(conn, params)
   end
 
   defp route(%Conn{method: "GET", path: "/bears"} = conn) do

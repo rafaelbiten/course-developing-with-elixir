@@ -31,7 +31,9 @@ defmodule Servy.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4"},
-      {:poison, "~> 4.0"}
+      {:hackney, "~> 1.17.0"},
+      {:poison, "~> 4.0"},
+      {:tesla, "~> 1.4"}
     ]
   end
 
