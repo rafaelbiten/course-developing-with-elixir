@@ -11,6 +11,7 @@ defmodule Mix.Tasks.Serve do
   @impl Mix.Task
   def run(args) do
     System.no_halt(true)
+    {:ok, _started} = Application.ensure_all_started(:servy)
     spawn(Servy.HttpServer, :start, [parse_args(args)])
     Mix.shell().info("Server is starting...")
   end
