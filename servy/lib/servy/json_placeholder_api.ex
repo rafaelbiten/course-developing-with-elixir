@@ -7,24 +7,21 @@ defmodule Servy.JsonPlaceholderApi do
   alias Servy.Conn
 
   def index(%Conn{} = conn) do
-    {:ok, response} = get("/users")
-    # resp_body = Poison.encode!(response.body)
-    %{
-      conn
-      | status: response.status,
-        resp_body: response.body,
-        resp_content_type: "application/json"
-    }
+    get("/users") |> handle_response(conn)
   end
 
   def get_user(%Conn{} = conn, %{"id" => id} = _params) do
-    {:ok, response} = get("/users/" <> id)
-    # resp_body = Poison.encode!(response.body)
-    %{
+    get("/users/" <> id) |> handle_response(conn)
+  end
+
+  defp handle_response({:ok, response}, %Conn{} = conn),
+    do: %{
       conn
       | status: response.status,
         resp_body: response.body,
         resp_content_type: "application/json"
     }
-  end
+
+  defp handle_response({:error, reason}, %Conn{} = conn),
+    do: %{conn | status: 500, resp_body: "Internal server error: #{reason}"}
 end
