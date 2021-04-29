@@ -9,12 +9,19 @@ defmodule Servy.HttpServer do
     # packet: :raw - delivers entire packet as it is received
     # active: false - waits for us to call :gen_tcp.recv/2 to deliver messages
     # reuseaddr: true - reuses address if the listener crashes
-    options = [:binary, backlog: 10, packet: :raw, active: false, reuseaddr: true]
-    {:ok, socket} = :gen_tcp.listen(port, options)
+    options = [:binary, packet: :raw, active: false, reuseaddr: true]
+    case :gen_tcp.listen(port, options) do
+      {:ok, socket} ->
+        try do
+          Logger.info("\nListening on port #{port}...")
+          listen(socket)
+        after
+          :gen_tcp.close(socket)
+        end
 
-    Logger.info("\nListening on port #{port}...")
-
-    listen(socket)
+      {:error, error} ->
+        Logger.error("Failed to open socket: #{error}")
+    end
   end
 
   defp listen(socket) do
@@ -40,12 +47,10 @@ defmodule Servy.HttpServer do
 
   defp receive_request(client_socket) do
     # 0 to receive all available bytes
-    case :gen_tcp.recv(client_socket, 0) do
-      {:ok, request} ->
-        Logger.info("Request received: \n")
-        Logger.info(request)
-        request
-    end
+    {:ok, request} = :gen_tcp.recv(client_socket, 0)
+    Logger.info("Request received: \n")
+    Logger.info(request)
+    request
   end
 
   defp send_response(response, client_socket) do
