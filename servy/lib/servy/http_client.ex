@@ -1,5 +1,9 @@
 defmodule Servy.HttpClient do
-  @moduledoc false
+  @moduledoc """
+  An "attempt" of a very rudimentary http client, but it has many flaws.
+  Leaving it here for reference, but refer to Tesla (project dependency) instead.
+  HTTPoison is also recommended, but opted for Tesla after checking both docs.
+  """
 
   require Logger
 

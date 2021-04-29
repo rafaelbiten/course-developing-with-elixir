@@ -1,4 +1,4 @@
-alias Servy.HttpClient, as: Client
+alias Tesla, as: Client
 alias Servy.HttpServer, as: Server
 
 alias Playground.Timer
