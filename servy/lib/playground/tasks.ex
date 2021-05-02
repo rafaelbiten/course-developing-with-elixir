@@ -20,6 +20,7 @@ defmodule Playground.Tasks do
     end
   end
 
+  # Task.yield returns nil for incomplete tasks and {:ok, result} for complete ones
   def peek(pid) do
     empty_message = {self(), __MODULE__, nil}
     {:messages, messages} = Process.info(self(), :messages)
@@ -29,6 +30,14 @@ defmodule Playground.Tasks do
     messages
     |> Enum.find(empty_message, fn {msg_pid, _, _} -> msg_pid == pid end)
     |> elem(2)
+  end
+
+  def complete?(pid) do
+    {:messages, messages} = Process.info(self(), :messages)
+
+    messages
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.member?(pid)
   end
 
   def example_task_to_run(sleep_amount \\ 10) do

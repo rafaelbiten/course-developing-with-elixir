@@ -74,4 +74,13 @@ defmodule Playground.TasksTest do
       assert {:ok, "result"} == Tasks.peek(long_task_pid)
     end
   end
+
+  describe "complete?" do
+    test "returns true when the task is complete" do
+      pid = Tasks.async(fn -> Tasks.example_task_to_run() end)
+      refute Tasks.complete?(pid)
+      :timer.sleep(20)
+      assert Tasks.complete?(pid)
+    end
+  end
 end
