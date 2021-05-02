@@ -47,4 +47,31 @@ defmodule Playground.TasksTest do
       assert {:ok, "result"} = Tasks.await(pid, :infinity), "should wait for the task to finish"
     end
   end
+
+  describe "peek/1" do
+    test "peek returns nil for ongoing tasks" do
+      pid = Tasks.async(fn -> Tasks.example_task_to_run(200) end)
+      assert nil == Tasks.peek(pid)
+    end
+
+    test "peek returns task result for completed tasks" do
+      pid = Tasks.async(fn -> Tasks.example_task_to_run() end)
+      :timer.sleep(20)
+      assert {:ok, "result"} == Tasks.peek(pid)
+    end
+
+    test "peek returns the expected task result without receiving it" do
+      quick_task_pid = Tasks.async(fn -> Tasks.example_task_to_run() end)
+      long_task_pid = Tasks.async(fn -> Tasks.example_task_to_run(200) end)
+
+      assert nil == Tasks.peek(quick_task_pid)
+      assert nil == Tasks.peek(long_task_pid)
+      :timer.sleep(100)
+      assert {:ok, "result"} == Tasks.peek(quick_task_pid)
+      assert nil == Tasks.peek(long_task_pid)
+      :timer.sleep(100)
+      assert {:ok, "result"} == Tasks.peek(quick_task_pid)
+      assert {:ok, "result"} == Tasks.peek(long_task_pid)
+    end
+  end
 end

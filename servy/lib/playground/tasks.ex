@@ -20,6 +20,17 @@ defmodule Playground.Tasks do
     end
   end
 
+  def peek(pid) do
+    empty_message = {self(), __MODULE__, nil}
+    {:messages, messages} = Process.info(self(), :messages)
+
+    # returns the last element of the message
+    # either `nil` from empty message or value from resolved task
+    messages
+    |> Enum.find(empty_message, fn {msg_pid, _, _} -> msg_pid == pid end)
+    |> elem(2)
+  end
+
   def example_task_to_run(sleep_amount \\ 10) do
     :timer.sleep(sleep_amount)
     {:ok, "result"}
