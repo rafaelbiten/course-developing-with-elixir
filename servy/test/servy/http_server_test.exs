@@ -7,31 +7,30 @@ defmodule Servy.HttpServerTest do
   test "accepts a request on a socket and sends back a response" do
     port = start_server()
 
-    {:ok, response} = Tesla.get("http://localhost:#{port}/wildthings")
-
-    assert response.status == 200
-    assert response.body == "😃 Bears, Leões, Tigers 😃"
+    Task.async(Tesla, :get, ["http://localhost:#{port}/wildthings"])
+    |> Task.await()
+    |> assert_response()
   end
 
   @tag :capture_log
   test "accepts and handles multiple concurrent requests" do
-    parent = self()
     port = start_server()
-    requests = 1..5
 
-    for _ <- requests do
-      spawn(fn -> send(parent, Tesla.get("http://localhost:#{port}/wildthings")) end)
-    end
-
-    for _ <- requests do
-      assert_receive({:ok, response})
-      assert response.status == 200
-    end
+    1..5
+    |> Enum.to_list()
+    |> Enum.map(fn _ -> Task.async(Tesla, :get, ["http://localhost:#{port}/wildthings"]) end)
+    |> Enum.map(&Task.await/1)
+    |> Enum.map(&assert_response/1)
   end
 
   defp start_server do
     port = Enum.random(1024..2000)
     spawn(HttpServer, :start, [port])
     port
+  end
+
+  defp assert_response({:ok, response}) do
+    assert response.status == 200
+    assert response.body == "😃 Bears, Leões, Tigers 😃"
   end
 end
