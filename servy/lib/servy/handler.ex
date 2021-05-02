@@ -49,11 +49,10 @@ defmodule Servy.Handler do
   end
 
   defp route(%Conn{method: "GET", path: "/snapshots"} = conn) do
-    snapshot1 = VideoCam.get_snapshot("cam-1")
-    snapshot2 = VideoCam.get_snapshot("cam-2")
-    snapshot3 = VideoCam.get_snapshot("cam-3")
-
-    snapshots = [snapshot1, snapshot2, snapshot3]
+    snapshots =
+      ["cam-1", "cam-2", "cam-3"]
+      |> Enum.map(&Task.async(VideoCam, :get_snapshot, [&1]))
+      |> Enum.map(&Task.await/1)
 
     %{conn | status: 200, resp_body: inspect(snapshots)}
   end
