@@ -12,14 +12,16 @@ defmodule Playground.Tasks do
     async(fn -> apply(m, f, a) end)
   end
 
-  def await(pid) when is_pid(pid) do
+  def await(pid, timeout \\ 100) when is_pid(pid) do
     receive do
       {^pid, __MODULE__, value} -> value
+    after
+      timeout -> exit("time out")
     end
   end
 
-  def example_task_to_run do
-    :timer.sleep(10)
+  def example_task_to_run(sleep_amount \\ 10) do
+    :timer.sleep(sleep_amount)
     {:ok, "result"}
   end
 end
