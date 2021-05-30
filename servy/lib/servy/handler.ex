@@ -48,6 +48,14 @@ defmodule Servy.Handler do
     %{conn | status: 200, resp_body: "Done!"}
   end
 
+  defp route(%Conn{method: "POST", path: "/pledges"} = conn) do
+    Servy.PledgeCtrl.create(conn, conn.params)
+  end
+
+  defp route(%Conn{method: "GET", path: "/pledges"} = conn) do
+    Servy.PledgeCtrl.index(conn)
+  end
+
   defp route(%Conn{method: "GET", path: "/snapshots"} = conn) do
     snapshots =
       ["cam-1", "cam-2", "cam-3"]
