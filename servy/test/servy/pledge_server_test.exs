@@ -3,6 +3,28 @@ defmodule Servy.PledgeServerTest do
   doctest Servy.PledgeServer
   alias Servy.PledgeServer
 
+  describe "PledgeServer" do
+    test "processes and does not accumulate unexpected messages" do
+      pid = PledgeServer.start()
+      Process.link(pid)
+
+      send(pid, {:unexpected, "message"})
+      send(pid, {:unexpected, "message"})
+      send(pid, {:unexpected, "message"})
+
+      {:messages, messages} = Process.info(pid, :messages)
+      assert length(messages) == 3
+
+      # give time for the mailbox to process the unexpected messages
+      # there's probably a better way to do this
+      :timer.sleep(1)
+
+      {:messages, messages} = Process.info(pid, :messages)
+      assert [] == messages
+      assert length(messages) == 0
+    end
+  end
+
   describe "start" do
     test "starts the process and returns its pid" do
       pid = PledgeServer.start()

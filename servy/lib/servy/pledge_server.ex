@@ -1,5 +1,5 @@
 defmodule Servy.PledgeServer do
-  @pledge_server :pledge_server
+  @pledge_server __MODULE__
 
   # client interface
 
@@ -53,6 +53,9 @@ defmodule Servy.PledgeServer do
           |> Enum.sum()
 
         send(sender, {:ok, total_pledged})
+        receive_loop(state)
+
+      _unexpected ->
         receive_loop(state)
     end
   end
