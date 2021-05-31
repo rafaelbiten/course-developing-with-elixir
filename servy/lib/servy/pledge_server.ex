@@ -33,6 +33,14 @@ defmodule Servy.PledgeServer do
     end
   end
 
+  def ping() do
+    send(@pledge_server, {self(), :ping})
+
+    receive do
+      {:ok, pong} -> pong
+    end
+  end
+
   # server
 
   def receive_loop(state) do
@@ -53,6 +61,10 @@ defmodule Servy.PledgeServer do
           |> Enum.sum()
 
         send(sender, {:ok, total_pledged})
+        receive_loop(state)
+
+      {sender, :ping} ->
+        send(sender, {:ok, :pong})
         receive_loop(state)
 
       _unexpected ->

@@ -14,14 +14,16 @@ defmodule Servy.PledgeServerTest do
 
       {:messages, messages} = Process.info(pid, :messages)
       assert length(messages) == 3
+      assert Enum.member?(messages, {:unexpected, "message"})
 
-      # give time for the mailbox to process the unexpected messages
-      # there's probably a better way to do this
-      :timer.sleep(1)
+      # Not required in this case, but some kind of ping/pong to
+      # services can be used as synchronization points to make sure
+      # that all messages sent to the service have been processed.
+      send(self(), PledgeServer.ping())
+      assert_receive :pong
 
       {:messages, messages} = Process.info(pid, :messages)
-      assert [] == messages
-      assert length(messages) == 0
+      refute Enum.member?(messages, {:unexpected, "message"})
     end
   end
 
