@@ -1,10 +1,10 @@
 defmodule Servy.Count404s do
+  use Agent
+
   @name __MODULE__
 
-  def start(initial_state \\ %{}) do
-    {:ok, pid} = Agent.start(fn -> initial_state end)
-    Process.register(pid, @name)
-    pid
+  def start_link(_initial_value) do
+    Agent.start_link(fn -> %{} end, name: @name)
   end
 
   def count(endpoint) do
@@ -14,11 +14,11 @@ defmodule Servy.Count404s do
   end
 
   def get_count(endpoint) do
-    Agent.get(@name, & &1)
+    get_counts()
     |> Map.get(endpoint, 0)
   end
 
-  def get_counts() do
+  def get_counts do
     Agent.get(@name, & &1)
   end
 end

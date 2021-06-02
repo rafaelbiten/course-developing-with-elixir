@@ -116,7 +116,12 @@ defmodule Servy.Handler do
     Servy.FileHandler.handle_file(conn, %{path: @path_to.pages, file: "about.html"})
   end
 
+  defp route(%Conn{method: "GET", path: "/404s"} = conn) do
+    %{conn | status: 200, resp_body: inspect(Servy.Count404s.get_counts())}
+  end
+
   defp route(%Conn{path: path} = conn) do
+    Servy.Count404s.count(path)
     %{conn | status: 404, resp_body: "The resource for #{path} could not be found."}
   end
 

@@ -75,6 +75,8 @@ defmodule Servy.HandlerTest do
 
   @tag :capture_log
   test "404s" do
+    start_supervised!(Servy.Count404s)
+
     request = """
     GET /unknown HTTP/1.1\r
     Host: example.com\r
@@ -89,6 +91,8 @@ defmodule Servy.HandlerTest do
            \r
            The resource for /unknown could not be found.
            """
+
+    assert Servy.Count404s.get_count("/unknown") == 1
   end
 
   test "GET /api/bears" do
