@@ -3,8 +3,8 @@ defmodule Servy.Count404s do
 
   @name __MODULE__
 
-  def start_link(_initial_value) do
-    Agent.start_link(fn -> %{} end, name: @name)
+  def start_link(initial_value) when is_map(initial_value) do
+    Agent.start_link(fn -> initial_value end, name: @name)
   end
 
   def count(endpoint) do

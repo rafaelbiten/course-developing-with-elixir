@@ -75,7 +75,7 @@ defmodule Servy.HandlerTest do
 
   @tag :capture_log
   test "404s" do
-    start_supervised!(Servy.Count404s)
+    start_supervised!({Servy.Count404s, %{}})
 
     request = """
     GET /unknown HTTP/1.1\r

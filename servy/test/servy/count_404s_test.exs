@@ -4,7 +4,7 @@ defmodule Servy.Count404sTest do
   alias Servy.Count404s
 
   test "reports counts of missing path requests" do
-    start_supervised!(Count404s)
+    start_supervised!({Count404s, %{}})
 
     Count404s.count("/bigfoot")
     Count404s.count("/nessie")
