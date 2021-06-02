@@ -3,7 +3,7 @@ defmodule Servy.PledgeAgentTest do
   alias Servy.PledgeAgent
 
   test "can create multiple pledges" do
-    PledgeAgent.start() |> Process.link()
+    start_supervised!(PledgeAgent)
     PledgeAgent.create("rafael", 10)
     PledgeAgent.create("flavia", 20)
 
@@ -11,14 +11,14 @@ defmodule Servy.PledgeAgentTest do
   end
 
   test "can retrieve pledges" do
-    PledgeAgent.start() |> Process.link()
+    start_supervised!(PledgeAgent)
     PledgeAgent.create("rafael", 10)
 
     assert [{"rafael", 10}] == PledgeAgent.recent_pledges()
   end
 
   test "can get the total amount of pledges" do
-    PledgeAgent.start() |> Process.link()
+    start_supervised!(PledgeAgent)
     PledgeAgent.create("rafael", 10)
     PledgeAgent.create("flavia", 20)
 
