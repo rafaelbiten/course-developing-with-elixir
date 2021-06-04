@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Pledge</title>
+</head>
+
+<body>
+    <h1>Create Pledge</h1>
+    <form id="form">
+        <fieldset>
+            <legend>Create a Pledge</legend>
+
+            <label for="name">Name</label>
+            <input name="name" id="name" type="text" required>
+
+            <label for="amount">Amount</label>
+            <input  name="amount" id="amount" type="text" required>
+
+            <button type="submit">Submit</button>
+        </fieldset>
+    </form>
+
+    <p><a href="/pledges">View all Pledges</a></p>
+    
+    <script>
+        document
+            .getElementById("form")
+            .addEventListener('submit', (event) => {
+                event.preventDefault()
+
+                fetch("/pledges", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(new FormData(event.target))
+                }).then(() => window.location.replace("/pledges"))
+            })
+    </script>
+</body>
+
+</html>

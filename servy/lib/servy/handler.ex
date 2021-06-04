@@ -56,6 +56,10 @@ defmodule Servy.Handler do
     Servy.PledgeCtrl.index(conn)
   end
 
+  defp route(%Conn{method: "GET", path: "/pledges/new"} = conn) do
+    Servy.PledgeCtrl.new(conn)
+  end
+
   defp route(%Conn{method: "GET", path: "/snapshots"} = conn) do
     snapshots =
       ["cam-1", "cam-2", "cam-3"]
