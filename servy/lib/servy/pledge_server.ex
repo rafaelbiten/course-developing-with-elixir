@@ -1,65 +1,35 @@
 defmodule Servy.PledgeServer do
   @pledge_server __MODULE__
 
+  alias Playground.GenericServer
+
   # client interface
 
   def start(initial_state \\ []) do
-    pid = spawn(__MODULE__, :receive_loop, [initial_state])
-    Process.register(pid, @pledge_server)
-    pid
+    GenericServer.start(__MODULE__, initial_state, @pledge_server)
   end
 
   def create(name, amount) do
-    call(@pledge_server, {:create, name, amount})
+    GenericServer.call(@pledge_server, {:create, name, amount})
   end
 
   def recent_pledges() do
-    call(@pledge_server, :recent_pledges)
+    GenericServer.call(@pledge_server, :recent_pledges)
   end
 
   def total_pledged() do
-    call(@pledge_server, :total_pledged)
-  end
-
-  def clear_pledges() do
-    cast(@pledge_server, :clear_pledges)
+    GenericServer.call(@pledge_server, :total_pledged)
   end
 
   def ping() do
-    call(@pledge_server, :ping)
+    GenericServer.call(@pledge_server, :ping)
   end
 
-  # Helper Functions
-
-  def call(pid, message) do
-    send(pid, {:call, self(), message})
-
-    receive do
-      {:response, response} -> response
-    end
+  def clear_pledges() do
+    GenericServer.cast(@pledge_server, :clear_pledges)
   end
 
-  def cast(pid, message) do
-    send(pid, {:cast, message})
-  end
-
-  # server
-
-  def receive_loop(state) do
-    receive do
-      {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
-        send(sender, {:response, response})
-        receive_loop(new_state)
-
-      {:cast, message} ->
-        new_state = handle_cast(message, state)
-        receive_loop(new_state)
-
-      _unexpected ->
-        receive_loop(state)
-    end
-  end
+  # server callbacks
 
   def handle_call(:total_pledged, state) do
     total_pledged =
