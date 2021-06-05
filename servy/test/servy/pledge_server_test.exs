@@ -72,4 +72,16 @@ defmodule Servy.PledgeServerTest do
       assert 30 == PledgeServer.total_pledged()
     end
   end
+
+  describe "clear_pledges" do
+    test "can clear the list of cached pledges" do
+      PledgeServer.start() |> Process.link()
+      PledgeServer.create("rafael", 10)
+      PledgeServer.create("flavia", 20)
+
+      assert PledgeServer.recent_pledges() |> length() == 2
+      PledgeServer.clear_pledges()
+      assert PledgeServer.recent_pledges() |> length() == 0
+    end
+  end
 end

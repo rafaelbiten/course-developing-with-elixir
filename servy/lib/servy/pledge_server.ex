@@ -10,66 +10,85 @@ defmodule Servy.PledgeServer do
   end
 
   def create(name, amount) do
-    send(@pledge_server, {self(), :create, name, amount})
-
-    receive do
-      {:ok, created_pledge_id} -> created_pledge_id
-    end
+    call(@pledge_server, {:create, name, amount})
   end
 
   def recent_pledges() do
-    send(@pledge_server, {self(), :recent_pledges})
-
-    receive do
-      {:ok, pledges} -> pledges
-    end
+    call(@pledge_server, :recent_pledges)
   end
 
   def total_pledged() do
-    send(@pledge_server, {self(), :total_pledged})
+    call(@pledge_server, :total_pledged)
+  end
 
-    receive do
-      {:ok, total_pledged} -> total_pledged
-    end
+  def clear_pledges() do
+    cast(@pledge_server, :clear_pledges)
   end
 
   def ping() do
-    send(@pledge_server, {self(), :ping})
+    call(@pledge_server, :ping)
+  end
+
+  # Helper Functions
+
+  def call(pid, message) do
+    send(pid, {:call, self(), message})
 
     receive do
-      {:ok, pong} -> pong
+      {:response, response} -> response
     end
+  end
+
+  def cast(pid, message) do
+    send(pid, {:cast, message})
   end
 
   # server
 
   def receive_loop(state) do
     receive do
-      {sender, :create, name, amount} ->
-        new_state = [{name, amount} | state]
-        send(sender, {:ok, random_id()})
+      {:call, sender, message} when is_pid(sender) ->
+        {response, new_state} = handle_call(message, state)
+        send(sender, {:response, response})
         receive_loop(new_state)
 
-      {sender, :recent_pledges} ->
-        send(sender, {:ok, Enum.take(state, 3)})
-        receive_loop(state)
-
-      {sender, :total_pledged} ->
-        total_pledged =
-          state
-          |> Enum.map(fn {_name, amount} -> amount end)
-          |> Enum.sum()
-
-        send(sender, {:ok, total_pledged})
-        receive_loop(state)
-
-      {sender, :ping} ->
-        send(sender, {:ok, :pong})
-        receive_loop(state)
+      {:cast, message} ->
+        new_state = handle_cast(message, state)
+        receive_loop(new_state)
 
       _unexpected ->
         receive_loop(state)
     end
+  end
+
+  def handle_call(:total_pledged, state) do
+    total_pledged =
+      state
+      |> Enum.map(fn {_name, amount} -> amount end)
+      |> Enum.sum()
+
+    {total_pledged, state}
+  end
+
+  def handle_call({:create, name, amount}, state) do
+    new_state = [{name, amount} | state]
+    {random_id(), new_state}
+  end
+
+  def handle_call(:recent_pledges, state) do
+    {Enum.take(state, 3), state}
+  end
+
+  def handle_call(:clear_pledges, _state) do
+    {:ok, []}
+  end
+
+  def handle_call(:ping, state) do
+    {:pong, state}
+  end
+
+  def handle_cast(:clear_pledges, _state) do
+    []
   end
 
   defp random_id do
