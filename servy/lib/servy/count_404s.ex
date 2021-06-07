@@ -14,8 +14,7 @@ defmodule Servy.Count404s do
   end
 
   def get_count(endpoint) do
-    get_counts()
-    |> Map.get(endpoint, 0)
+    get_counts() |> Map.get(endpoint, 0)
   end
 
   def get_counts do

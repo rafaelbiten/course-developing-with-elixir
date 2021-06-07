@@ -7,6 +7,8 @@ alias Playground.Messages
 
 alias Servy.{ PledgeServer, PledgeCtrl }
 
-Servy.Count404s.start_link(%{})
-Servy.PledgeAgent.start_link([])
-spawn(Servy.HttpServer, :start, [4000]) |> Process.link()
+if (Application.get_env(:servy, :environment) == :dev) do
+  Servy.Count404s.start_link(%{})
+  Servy.PledgeAgent.start_link([])
+  spawn(Servy.HttpServer, :start, [4000]) |> Process.link()
+end
