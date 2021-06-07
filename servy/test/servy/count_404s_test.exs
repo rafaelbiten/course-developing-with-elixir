@@ -17,4 +17,16 @@ defmodule Servy.Count404sTest do
 
     assert Count404s.get_counts() == %{"/bigfoot" => 2, "/nessie" => 3}
   end
+
+  test "can reset counts" do
+    start_supervised!({Count404s, %{}})
+
+    Count404s.count("/nessie")
+    Count404s.count("/nessie")
+
+    assert Count404s.get_counts() == %{"/nessie" => 2}
+
+    Count404s.reset_counts()
+    assert Count404s.get_counts() == %{}
+  end
 end

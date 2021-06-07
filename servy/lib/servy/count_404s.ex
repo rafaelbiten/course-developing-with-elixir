@@ -20,4 +20,8 @@ defmodule Servy.Count404s do
   def get_counts do
     Agent.get(@name, & &1)
   end
+
+  def reset_counts do
+    Agent.update(@name, fn _state -> %{} end)
+  end
 end
