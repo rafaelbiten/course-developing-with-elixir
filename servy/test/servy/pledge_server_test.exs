@@ -4,9 +4,9 @@ defmodule Servy.PledgeServerTest do
   alias Servy.PledgeServer
 
   describe "PledgeServer" do
+    @tag :capture_log
     test "processes and does not accumulate unexpected messages" do
-      pid = PledgeServer.start()
-      Process.link(pid)
+      pid = start_supervised!(PledgeServer, [])
 
       send(pid, {:unexpected, "message"})
       send(pid, {:unexpected, "message"})
@@ -29,21 +29,20 @@ defmodule Servy.PledgeServerTest do
 
   describe "start" do
     test "starts the process and returns its pid" do
-      pid = PledgeServer.start()
-      Process.link(pid)
+      pid = start_supervised!(PledgeServer, [])
 
       assert is_pid(pid)
       assert Process.alive?(pid)
     end
 
     test "can be started without an initial_state" do
-      PledgeServer.start() |> Process.link()
+      start_supervised!(PledgeServer)
       assert [] == PledgeServer.recent_pledges()
     end
 
     test "can be started with an initial_state" do
       initial_state = [{"rafael", 10}]
-      PledgeServer.start(initial_state) |> Process.link()
+      start_supervised!({PledgeServer, initial_state})
 
       assert initial_state == PledgeServer.recent_pledges()
     end
@@ -51,7 +50,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "create" do
     test "can create new pledges" do
-      PledgeServer.start() |> Process.link()
+      start_supervised!(PledgeServer)
 
       PledgeServer.create("rafael", 10)
       assert [{"rafael", 10}] == PledgeServer.recent_pledges()
@@ -63,7 +62,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "total_pledges" do
     test "returns the total amount of pledges" do
-      PledgeServer.start() |> Process.link()
+      start_supervised!(PledgeServer)
 
       assert 0 == PledgeServer.total_pledged()
 
@@ -75,7 +74,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "clear_pledges" do
     test "can clear the list of cached pledges" do
-      PledgeServer.start() |> Process.link()
+      start_supervised!(PledgeServer)
       PledgeServer.create("rafael", 10)
       PledgeServer.create("flavia", 20)
 
