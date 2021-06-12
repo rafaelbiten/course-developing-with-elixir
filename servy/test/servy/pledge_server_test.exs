@@ -2,11 +2,12 @@ defmodule Servy.PledgeServerTest do
   use ExUnit.Case
   doctest Servy.PledgeServer
   alias Servy.PledgeServer
+  alias Servy.PledgeServer.State
 
   describe "PledgeServer" do
     @tag :capture_log
     test "processes and does not accumulate unexpected messages" do
-      pid = start_supervised!(PledgeServer, [])
+      pid = start_supervised!(PledgeServer)
 
       send(pid, {:unexpected, "message"})
       send(pid, {:unexpected, "message"})
@@ -29,7 +30,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "start" do
     test "starts the process and returns its pid" do
-      pid = start_supervised!(PledgeServer, [])
+      pid = start_supervised!(PledgeServer)
 
       assert is_pid(pid)
       assert Process.alive?(pid)
@@ -41,10 +42,10 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "can be started with an initial_state" do
-      initial_state = [{"rafael", 10}]
+      initial_state = %State{pledges: [{"rafael", 10}]}
       start_supervised!({PledgeServer, initial_state})
 
-      assert initial_state == PledgeServer.recent_pledges()
+      assert [{"rafael", 10}] == PledgeServer.recent_pledges()
     end
   end
 
