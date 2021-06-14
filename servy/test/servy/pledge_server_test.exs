@@ -42,10 +42,10 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "can be started with an initial_state" do
-      initial_state = %State{pledges: [{"rafael", 10}]}
+      initial_state = %State{pledges: [{"pledge1", 1}]}
       start_supervised!({PledgeServer, initial_state})
 
-      assert [{"rafael", 10}] == PledgeServer.recent_pledges()
+      assert [{"pledge1", 1}] == PledgeServer.recent_pledges()
     end
   end
 
@@ -53,11 +53,11 @@ defmodule Servy.PledgeServerTest do
     test "can create new pledges" do
       start_supervised!(PledgeServer)
 
-      PledgeServer.create("rafael", 10)
-      assert [{"rafael", 10}] == PledgeServer.recent_pledges()
+      PledgeServer.create("pledge1", 1)
+      assert [{"pledge1", 1}] == PledgeServer.recent_pledges()
 
-      PledgeServer.create("flavia", 20)
-      assert [{"flavia", 20}, {"rafael", 10}] == PledgeServer.recent_pledges()
+      PledgeServer.create("pledge2", 2)
+      assert [{"pledge2", 2}, {"pledge1", 1}] == PledgeServer.recent_pledges()
     end
   end
 
@@ -67,21 +67,49 @@ defmodule Servy.PledgeServerTest do
 
       assert 0 == PledgeServer.total_pledged()
 
-      PledgeServer.create("rafael", 10)
-      PledgeServer.create("flavia", 20)
-      assert 30 == PledgeServer.total_pledged()
+      1..2 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+
+      assert 3 == PledgeServer.total_pledged()
+    end
+
+    test "respects the cache size" do
+      initial_state = %State{cache_size: 2}
+      start_supervised!({PledgeServer, initial_state})
+
+      1..3 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+
+      assert length(PledgeServer.recent_pledges()) === 2
+      assert PledgeServer.recent_pledges() === [{"pledge3", 3}, {"pledge2", 2}]
+    end
+  end
+
+  describe "set_cache_size" do
+    test "can set cache size" do
+      initial_state = %State{cache_size: 1}
+      start_supervised!({PledgeServer, initial_state})
+
+      1..2 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+
+      assert length(PledgeServer.recent_pledges()) === 1
+      assert PledgeServer.recent_pledges() === [{"pledge2", 2}]
+
+      PledgeServer.set_cache_size(5)
+
+      1..10 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+
+      assert length(PledgeServer.recent_pledges()) === 5
     end
   end
 
   describe "clear_pledges" do
     test "can clear the list of cached pledges" do
       start_supervised!(PledgeServer)
-      PledgeServer.create("rafael", 10)
-      PledgeServer.create("flavia", 20)
 
-      assert PledgeServer.recent_pledges() |> length() == 2
+      1..4 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+
+      assert length(PledgeServer.recent_pledges()) == 3
       PledgeServer.clear_pledges()
-      assert PledgeServer.recent_pledges() |> length() == 0
+      assert length(PledgeServer.recent_pledges()) == 0
     end
   end
 end
