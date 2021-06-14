@@ -4,6 +4,53 @@ defmodule Servy.PledgeServerTest do
   alias Servy.PledgeServer
   alias Servy.PledgeServer.State
 
+  describe ":sys" do
+    @doc """
+    http://erlang.org/doc/man/sys.html
+
+    :sys can be used to check and debug processes
+
+    Leaving some extra tests here as my personal notes
+    """
+
+    test "can get the state of a process" do
+      pid = start_supervised!(PledgeServer)
+      assert %{cache_size: 3, pledges: []} = :sys.get_state(pid)
+
+      PledgeServer.set_cache_size(1)
+      PledgeServer.create("pledge1", 1)
+      assert %{cache_size: 1, pledges: [{"pledge1", 1}]} = :sys.get_state(pid)
+    end
+
+    test "can get the full status of a process" do
+      pid = start_supervised!(PledgeServer)
+
+      assert {:status, pid, {:module, :gen_server},
+              [
+                [
+                  "$ancestors": [_pid_anc_1, _pid_anc_2],
+                  "$initial_call": {Servy.PledgeServer, :init, 1}
+                ],
+                :running,
+                pid,
+                [],
+                [
+                  header: 'Status for generic server Elixir.Servy.PledgeServer',
+                  data: [{'Status', :running}, {'Parent', pid}, {'Logged events', []}],
+                  data: [{'State', %Servy.PledgeServer.State{cache_size: 3, pledges: []}}]
+                ]
+              ]} = :sys.get_status(pid)
+    end
+
+    test "can trace process activities" do
+      pid = start_supervised!(PledgeServer)
+      :sys.trace(pid, true)
+
+      # PledgeServer.set_cache_size(1)
+      # PledgeServer.create("pledge1", 1)
+    end
+  end
+
   describe "PledgeServer" do
     @tag :capture_log
     test "processes and does not accumulate unexpected messages" do
