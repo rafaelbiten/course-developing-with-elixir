@@ -65,8 +65,9 @@ defmodule Playground.GenericServer do
         new_state = callback_module.handle_cast(message, state)
         receive_loop(new_state, callback_module)
 
-      _unexpected ->
-        receive_loop(state, callback_module)
+      unexpected ->
+        new_state = callback_module.handle_info(unexpected, state)
+        receive_loop(new_state, callback_module)
     end
   end
 end
