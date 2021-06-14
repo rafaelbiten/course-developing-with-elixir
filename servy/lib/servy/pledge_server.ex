@@ -6,7 +6,7 @@ defmodule Servy.PledgeServer do
   require Logger
 
   defmodule State do
-    defstruct cache_size: 3, pledges: []
+    defstruct cache_size: 3, pledges: [], cache_limit: 100
   end
 
   # client interface
@@ -61,12 +61,12 @@ defmodule Servy.PledgeServer do
 
   def handle_call({:create, name, amount}, _from, %State{} = state) do
     new_pledges = [{name, amount} | state.pledges]
-    cached_pledges = Enum.take(new_pledges, state.cache_size)
+    cached_pledges = Enum.take(new_pledges, state.cache_limit)
     {:reply, random_id(), %{state | pledges: cached_pledges}}
   end
 
   def handle_call(:recent_pledges, _from, %State{} = state) do
-    {:reply, state.pledges, state}
+    {:reply, Enum.take(state.pledges, state.cache_size), state}
   end
 
   def handle_call(:ping, _from, state) do
@@ -74,6 +74,13 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast({:set_cache_size, cache_size}, %State{} = state) do
+    cache_size =
+      if cache_size >= state.cache_limit do
+        state.cache_limit
+      else
+        cache_size
+      end
+
     {:noreply, %{state | cache_size: cache_size}}
   end
 

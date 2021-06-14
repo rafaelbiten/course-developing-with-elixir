@@ -106,6 +106,16 @@ defmodule Servy.PledgeServerTest do
       PledgeServer.create("pledge2", 2)
       assert [{"pledge2", 2}, {"pledge1", 1}] == PledgeServer.recent_pledges()
     end
+
+    test "respects the limit of cached pledges" do
+      pid = start_supervised!(PledgeServer)
+
+      1..120 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+      %State{pledges: pledges} = :sys.get_state(pid)
+
+      assert length(pledges) === 100
+      assert hd(pledges) === {"pledge120", 120}
+    end
   end
 
   describe "total_pledges" do
@@ -145,6 +155,34 @@ defmodule Servy.PledgeServerTest do
       1..10 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
 
       assert length(PledgeServer.recent_pledges()) === 5
+    end
+
+    test "can reset cache size to see more or less of the recent pleges" do
+      initial_state = %State{cache_size: 1}
+      start_supervised!({PledgeServer, initial_state})
+
+      1..20 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
+      assert length(PledgeServer.recent_pledges()) === 1
+
+      PledgeServer.set_cache_size(15)
+      recent_pledges = PledgeServer.recent_pledges()
+      assert length(recent_pledges) === 15
+      assert hd(recent_pledges) === {"pledge20", 20}
+    end
+
+    test "can't be set to a higher value than the cache_limit" do
+      pid = start_supervised!(PledgeServer)
+
+      assert %State{cache_size: 3} = :sys.get_state(pid)
+
+      PledgeServer.set_cache_size(50)
+      assert %State{cache_size: 50} = :sys.get_state(pid)
+
+      PledgeServer.set_cache_size(100)
+      assert %State{cache_size: 100} = :sys.get_state(pid)
+
+      PledgeServer.set_cache_size(101)
+      assert %State{cache_size: 100} = :sys.get_state(pid)
     end
   end
 
