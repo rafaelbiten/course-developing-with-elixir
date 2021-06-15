@@ -10,5 +10,6 @@ alias Servy.{ PledgeServer, PledgeCtrl }
 if (Application.get_env(:servy, :environment) == :dev) do
   Servy.Count404s.start_link(%{})
   Servy.PledgeAgent.start_link([])
+  Servy.SensorServer.start_link()
   spawn(Servy.HttpServer, :start, [4000]) |> Process.link()
 end

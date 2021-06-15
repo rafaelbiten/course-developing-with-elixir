@@ -6,7 +6,6 @@ defmodule Servy.Handler do
 
   alias Servy.BearApi
   alias Servy.BearCtrl
-  alias Servy.VideoCam
   alias Servy.JsonPlaceholderApi
 
   # import Servy.Plugins,
@@ -61,11 +60,7 @@ defmodule Servy.Handler do
   end
 
   defp route(%Conn{method: "GET", path: "/snapshots"} = conn) do
-    snapshots =
-      ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Task.async(VideoCam, :get_snapshot, [&1]))
-      |> Enum.map(&Task.await/1)
-
+    snapshots = Servy.SensorServer.get_snapshots()
     %{conn | status: 200, resp_body: inspect(snapshots)}
   end
 
