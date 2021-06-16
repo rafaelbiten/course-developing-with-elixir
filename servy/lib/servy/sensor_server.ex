@@ -3,12 +3,18 @@ defmodule Servy.SensorServer do
   This server exposes a fn to allow clients to get snapshots.
   These snapshots are cached and refreshed following the refresh_interval.
   """
-
   use GenServer
+  require Logger
+
   @name __MODULE__
 
+  Module.register_attribute(@name, :initial_refresh_interval, persist: true)
+  @initial_refresh_interval :timer.seconds(5)
+
   defmodule State do
-    defstruct refresh_interval: :timer.seconds(5),
+    alias Servy.SensorServer
+
+    defstruct refresh_interval: Module.get_attribute(SensorServer, :initial_refresh_interval),
               snapshots: []
   end
 
@@ -24,6 +30,11 @@ defmodule Servy.SensorServer do
     GenServer.call(@name, :get_snapshots)
   end
 
+  def set_refresh_interval(refresh_interval)
+      when is_integer(refresh_interval) and refresh_interval >= @initial_refresh_interval do
+    GenServer.cast(@name, {:set_refresh_interval, refresh_interval})
+  end
+
   # server callbacks
 
   def init(%State{} = state) do
@@ -32,14 +43,25 @@ defmodule Servy.SensorServer do
     {:ok, %State{state | snapshots: snapshots}}
   end
 
+  def init(_), do: {:ok, %State{}}
+
   def handle_info(:refresh_sensor_data, state) do
     snapshots = run_tasks_to_get_sensor_data()
     schedule_next_refresh(state.refresh_interval)
     {:noreply, %State{state | snapshots: snapshots}}
   end
 
+  def handle_info(unexpected, state) do
+    Logger.warn("#{@name} received unexpected info: #{inspect(unexpected)}")
+    {:noreply, state}
+  end
+
   def handle_call(:get_snapshots, _from, %State{} = state) do
     {:reply, state.snapshots, state}
+  end
+
+  def handle_cast({:set_refresh_interval, refresh_interval}, %State{} = state) do
+    {:noreply, %State{state | refresh_interval: refresh_interval}}
   end
 
   # internal implementation details
