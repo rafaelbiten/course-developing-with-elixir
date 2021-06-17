@@ -94,9 +94,6 @@ defmodule Servy.PledgeServer do
   end
 
   defp random_id do
-    :rand.uniform()
-    |> Float.to_string()
-    |> String.split(".")
-    |> Enum.at(1)
+    :rand.uniform(1_000_000)
   end
 end
