@@ -8,6 +8,9 @@ defmodule Servy.SensorServer do
 
   @name __MODULE__
 
+  # setting persist: true because we're accessing this module attribute from tests
+  # another option would be to expose a fn that returns the value of the attribute
+  # but leaving this in here for future reference on how to do it
   Module.register_attribute(@name, :initial_refresh_interval, persist: true)
   @initial_refresh_interval :timer.seconds(5)
 
