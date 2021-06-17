@@ -4,12 +4,26 @@ defmodule Servy.HttpServerGenServer do
   This HttpServerGenServer wraps the HttpServer into a GenServer for supervision.
   """
 
+  @name __MODULE__
+
   use GenServer
 
   require Logger
 
+  # Interface
+
   def start_link() do
-    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+    GenServer.start_link(@name, :ok, name: @name)
+  end
+
+  # Not using the genserver state
+  def get_http_server_pid() do
+    Process.whereis(Servy.HttpServer)
+  end
+
+  # Using the genserver state
+  def get_http_server_pid_call() do
+    GenServer.call(@name, :get_http_server_pid)
   end
 
   def init(:ok) do
@@ -21,6 +35,12 @@ defmodule Servy.HttpServerGenServer do
     {:ok, pid}
   end
 
+  # Implementation
+
+  def handle_call(:get_http_server_pid, _from, state) do
+    {:reply, state, state}
+  end
+
   def handle_info({:EXIT, _pid, reason}, _state) do
     Logger.warn("Servy.HttpServer exited with reason: #{inspect(reason)}")
     new_server_pid = start_http_server()
@@ -28,7 +48,7 @@ defmodule Servy.HttpServerGenServer do
   end
 
   defp start_http_server() do
-    pid = spawn_link(Servy.HttpServer, :start, [4000])
+    pid = spawn_link(Servy.HttpServer, :start, [4001])
     Process.register(pid, Servy.HttpServer)
     pid
   end
