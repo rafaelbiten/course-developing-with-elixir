@@ -23,6 +23,7 @@ defmodule Servy.HttpServerTest do
     |> Enum.map(&assert_response/1)
   end
 
+  @tag :skip
   @tag :capture_log
   test "multiple endpoints responding with status 200" do
     [
@@ -44,7 +45,7 @@ defmodule Servy.HttpServerTest do
 
   defp start_server do
     port = Enum.random(1024..2000)
-    spawn(HttpServer, :start, [port])
+    spawn_link(HttpServer, :start, [port])
     port
   end
 
