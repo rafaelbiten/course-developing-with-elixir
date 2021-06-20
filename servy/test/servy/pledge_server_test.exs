@@ -14,7 +14,7 @@ defmodule Servy.PledgeServerTest do
     """
 
     test "can get the state of a process" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
       assert %{cache_size: 3, pledges: []} = :sys.get_state(pid)
 
       PledgeServer.set_cache_size(1)
@@ -23,13 +23,13 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "can get the full status of a process" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
 
       assert {:status, pid, {:module, :gen_server},
               [
                 [
-                  "$ancestors": [_pid_anc_1, _pid_anc_2],
-                  "$initial_call": {Servy.PledgeServer, :init, 1}
+                  "$initial_call": {Servy.PledgeServer, :init, 1},
+                  "$ancestors": [_pid_anc_1, _pid_anc_2]
                 ],
                 :running,
                 pid,
@@ -43,7 +43,7 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "can trace process activities" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
       :sys.trace(pid, true)
 
       # PledgeServer.set_cache_size(1)
@@ -54,7 +54,7 @@ defmodule Servy.PledgeServerTest do
   describe "PledgeServer" do
     @tag :capture_log
     test "processes and does not accumulate unexpected messages" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
 
       send(pid, {:unexpected, "message"})
       send(pid, {:unexpected, "message"})
@@ -77,14 +77,15 @@ defmodule Servy.PledgeServerTest do
 
   describe "start" do
     test "starts the process and returns its pid" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
 
       assert is_pid(pid)
       assert Process.alive?(pid)
     end
 
+    # @tag :skip
     test "can be started without an initial_state" do
-      start_supervised!(PledgeServer)
+      start_supervised!({PledgeServer, nil})
       assert [] == PledgeServer.recent_pledges()
     end
 
@@ -98,7 +99,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "create" do
     test "can create new pledges" do
-      start_supervised!(PledgeServer)
+      start_supervised!({PledgeServer, %State{}})
 
       PledgeServer.create("pledge1", 1)
       assert [{"pledge1", 1}] == PledgeServer.recent_pledges()
@@ -108,7 +109,7 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "respects the limit of cached pledges" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
 
       1..120 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
       %State{pledges: pledges} = :sys.get_state(pid)
@@ -120,7 +121,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "total_pledges" do
     test "returns the total amount of pledges" do
-      start_supervised!(PledgeServer)
+      start_supervised!({PledgeServer, %State{}})
 
       assert 0 == PledgeServer.total_pledged()
 
@@ -171,7 +172,7 @@ defmodule Servy.PledgeServerTest do
     end
 
     test "can't be set to a higher value than the cache_limit" do
-      pid = start_supervised!(PledgeServer)
+      pid = start_supervised!({PledgeServer, %State{}})
 
       assert %State{cache_size: 3} = :sys.get_state(pid)
 
@@ -188,7 +189,7 @@ defmodule Servy.PledgeServerTest do
 
   describe "clear_pledges" do
     test "can clear the list of cached pledges" do
-      start_supervised!(PledgeServer)
+      start_supervised!({PledgeServer, %State{}})
 
       1..4 |> Enum.each(&PledgeServer.create("pledge#{&1}", &1))
 

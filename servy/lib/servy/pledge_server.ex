@@ -11,10 +11,12 @@ defmodule Servy.PledgeServer do
 
   # client interface
 
-  def start_link(initial_state \\ %State{}) do
+  def start_link(%State{} = initial_state) do
     # GenericServer.start(__MODULE__, initial_state, @pledge_server)
     GenServer.start(__MODULE__, initial_state, name: @pledge_server)
   end
+
+  def start_link(_unexpected_initial_state), do: start_link(%State{})
 
   def create(name, amount) do
     GenServer.call(@pledge_server, {:create, name, amount})
