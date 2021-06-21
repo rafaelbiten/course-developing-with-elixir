@@ -12,7 +12,7 @@ defmodule Servy.HttpServerGenServer do
 
   # Interface
 
-  def start_link() do
+  def start_link(_arg) do
     GenServer.start_link(@name, :ok, name: @name)
   end
 
@@ -48,7 +48,7 @@ defmodule Servy.HttpServerGenServer do
   end
 
   defp start_http_server() do
-    pid = spawn_link(Servy.HttpServer, :start, [4001])
+    pid = spawn_link(Servy.HttpServer, :start, [4000])
     Process.register(pid, Servy.HttpServer)
     pid
   end

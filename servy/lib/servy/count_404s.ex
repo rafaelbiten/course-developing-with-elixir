@@ -7,6 +7,8 @@ defmodule Servy.Count404s do
     Agent.start_link(fn -> initial_value end, name: @name)
   end
 
+  def start_link(_unexpected_arg), do: start_link(%{})
+
   def count(endpoint) do
     Agent.update(@name, fn state ->
       Map.update(state, endpoint, 1, fn value -> value + 1 end)
