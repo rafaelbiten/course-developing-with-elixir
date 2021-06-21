@@ -1,7 +1,9 @@
 defmodule Servy.SensorServerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Servy.SensorServer
   alias Servy.SensorServer.State
+
+  @moduletag capture_log: true
 
   describe "set_refresh_interval" do
     test "can set a new refresh interval" do
