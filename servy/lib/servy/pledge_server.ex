@@ -13,7 +13,7 @@ defmodule Servy.PledgeServer do
 
   def start_link(%State{} = initial_state) do
     # GenericServer.start(__MODULE__, initial_state, @pledge_server)
-    GenServer.start(__MODULE__, initial_state, name: @pledge_server)
+    GenServer.start_link(__MODULE__, initial_state, name: @pledge_server)
   end
 
   def start_link(_unexpected_initial_state), do: start_link(%State{})

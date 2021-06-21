@@ -25,9 +25,12 @@ defmodule Servy.SensorServer do
 
   # client interface
 
-  def start_link(initial_state \\ %State{}) do
-    GenServer.start(__MODULE__, initial_state, name: @name)
+  def start_link(%State{} = initial_state) do
+    Logger.info("Starting Sensor Server with: #{inspect(initial_state)}")
+    GenServer.start_link(__MODULE__, initial_state, name: @name)
   end
+
+  def start_link(_unexpected_initial_state), do: start_link(%State{})
 
   def get_snapshots() do
     GenServer.call(@name, :get_snapshots)

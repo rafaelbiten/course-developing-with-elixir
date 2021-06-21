@@ -24,22 +24,7 @@ defmodule Servy.PledgeServerTest do
 
     test "can get the full status of a process" do
       pid = start_supervised!({PledgeServer, %State{}})
-
-      assert {:status, pid, {:module, :gen_server},
-              [
-                [
-                  "$initial_call": {Servy.PledgeServer, :init, 1},
-                  "$ancestors": [_pid_anc_1, _pid_anc_2]
-                ],
-                :running,
-                pid,
-                [],
-                [
-                  header: 'Status for generic server Elixir.Servy.PledgeServer',
-                  data: [{'Status', :running}, {'Parent', pid}, {'Logged events', []}],
-                  data: [{'State', %Servy.PledgeServer.State{cache_size: 3, pledges: []}}]
-                ]
-              ]} = :sys.get_status(pid)
+      assert {:status, ^pid, {:module, :gen_server}, _full_status} = :sys.get_status(pid)
     end
 
     test "can trace process activities" do
