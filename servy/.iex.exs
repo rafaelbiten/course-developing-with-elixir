@@ -8,5 +8,5 @@ alias Playground.Messages
 alias Servy.{ PledgeServer, PledgeCtrl }
 
 if (Application.get_env(:servy, :environment) == :dev) do
-  Servy.ServicesSupervisor.start_link()
+  Servy.Supervisor.start_link()
 end
