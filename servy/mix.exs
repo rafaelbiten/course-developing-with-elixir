@@ -4,6 +4,7 @@ defmodule Servy.MixProject do
   def project do
     [
       app: :servy,
+      description: "A flawed and limited HTTP server",
       version: "0.1.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
@@ -19,8 +20,15 @@ defmodule Servy.MixProject do
 
   # Run "mix help compile.app" to learn about applications.
   def application do
+    initial_servy_args = []
+
+    # Can be overwritten from the /config files, per environment
+    default_env = [port: 3000]
+
     [
-      extra_applications: [:logger, :eex]
+      extra_applications: [:logger, :eex],
+      mod: {Servy, initial_servy_args},
+      env: default_env
     ]
   end
 

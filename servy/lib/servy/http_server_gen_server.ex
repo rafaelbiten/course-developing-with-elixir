@@ -48,7 +48,8 @@ defmodule Servy.HttpServerGenServer do
   end
 
   defp start_http_server() do
-    pid = spawn_link(Servy.HttpServer, :start, [4000])
+    port = Application.fetch_env!(:servy, :port)
+    pid = spawn_link(Servy.HttpServer, :start, [port])
     Process.register(pid, Servy.HttpServer)
     pid
   end
