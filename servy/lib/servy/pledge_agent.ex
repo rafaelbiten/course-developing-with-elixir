@@ -1,23 +1,25 @@
 defmodule Servy.PledgeAgent do
   use Agent
 
-  @name __MODULE__
+  @this __MODULE__
 
-  def start_link(initial_value) do
-    Agent.start_link(fn -> initial_value end, name: @name)
+  def start_link(opts \\ []) do
+    name = Keyword.get(opts, :name, @this)
+    initial_state = Keyword.get(opts, :initial_state, [])
+    Agent.start_link(fn -> initial_state end, name: name)
   end
 
-  def create(name, amount) do
-    Agent.update(@name, fn state -> [{name, amount} | state] end)
+  def create(name, amount, this \\ @this) do
+    Agent.update(this, fn state -> [{name, amount} | state] end)
   end
 
-  def total_pledged() do
-    Agent.get(@name, & &1)
+  def total_pledged(this \\ @this) do
+    Agent.get(this, & &1)
     |> Enum.map(fn {_name, amount} -> amount end)
     |> Enum.sum()
   end
 
-  def recent_pledges() do
-    Agent.get(@name, & &1)
+  def recent_pledges(this \\ @this) do
+    Agent.get(this, & &1)
   end
 end
