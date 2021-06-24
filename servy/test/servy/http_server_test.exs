@@ -23,7 +23,7 @@ defmodule Servy.HttpServerTest do
     |> Enum.map(&assert_response/1)
   end
 
-  @tag :skip
+  # @tag :skip
   @tag :capture_log
   test "multiple endpoints responding with status 200" do
     [
