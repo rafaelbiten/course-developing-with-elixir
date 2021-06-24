@@ -1,5 +1,5 @@
 defmodule Playground.RecurseTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Playground.Recurse
   alias Playground.Recurse
 

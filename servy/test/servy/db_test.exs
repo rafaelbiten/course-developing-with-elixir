@@ -1,5 +1,5 @@
 defmodule Servy.DbTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Servy.Db
   alias Servy.Db
 

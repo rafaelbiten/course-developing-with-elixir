@@ -1,5 +1,5 @@
 defmodule Servy.PledgeAgentTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Servy.PledgeAgent
 
   test "can create multiple pledges" do

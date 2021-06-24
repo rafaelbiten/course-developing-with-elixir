@@ -1,5 +1,5 @@
 defmodule Servy.PledgeServerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Servy.PledgeServer
   alias Servy.PledgeServer
   alias Servy.PledgeServer.State

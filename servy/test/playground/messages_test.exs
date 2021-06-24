@@ -1,5 +1,5 @@
 defmodule Playground.MessagesTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Playground.Messages
   alias Playground.Messages
 
