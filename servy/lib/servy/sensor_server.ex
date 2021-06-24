@@ -6,12 +6,12 @@ defmodule Servy.SensorServer do
   use GenServer
   require Logger
 
-  @name __MODULE__
+  @this __MODULE__
 
   # setting persist: true because we're accessing this module attribute from tests
   # another option would be to expose a fn that returns the value of the attribute
   # but leaving this in here for future reference on how to do it
-  Module.register_attribute(@name, :initial_refresh_interval, persist: true)
+  Module.register_attribute(@this, :initial_refresh_interval, persist: true)
   @initial_refresh_interval :timer.seconds(5)
 
   defmodule State do
@@ -25,20 +25,20 @@ defmodule Servy.SensorServer do
 
   # client interface
 
-  def start_link(%State{} = initial_state) do
+  def start_link(opts \\ []) do
+    name = Keyword.get(opts, :name, @this)
+    initial_state = Keyword.get(opts, :initial_state, %State{})
     Logger.info("Starting Sensor Server with: #{inspect(initial_state)}")
-    GenServer.start_link(__MODULE__, initial_state, name: @name)
+    GenServer.start_link(__MODULE__, initial_state, name: name)
   end
 
-  def start_link(_unexpected_initial_state), do: start_link(%State{})
-
-  def get_snapshots() do
-    GenServer.call(@name, :get_snapshots)
+  def get_snapshots(this \\ @this) do
+    GenServer.call(this, :get_snapshots)
   end
 
-  def set_refresh_interval(refresh_interval)
+  def set_refresh_interval(refresh_interval, this \\ @this)
       when is_integer(refresh_interval) and refresh_interval >= @initial_refresh_interval do
-    GenServer.cast(@name, {:set_refresh_interval, refresh_interval})
+    GenServer.cast(this, {:set_refresh_interval, refresh_interval})
   end
 
   # server callbacks
@@ -58,7 +58,7 @@ defmodule Servy.SensorServer do
   end
 
   def handle_info(unexpected, state) do
-    Logger.warn("#{@name} received unexpected info: #{inspect(unexpected)}")
+    Logger.warn("#{@this} received unexpected info: #{inspect(unexpected)}")
     {:noreply, state}
   end
 

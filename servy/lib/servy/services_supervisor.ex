@@ -10,7 +10,7 @@ defmodule Servy.ServicesSupervisor do
       Servy.Count404s,
       Servy.PledgeServer,
       {Servy.SensorServer,
-       %Servy.SensorServer.State{
+       initial_state: %Servy.SensorServer.State{
          refresh_interval: :timer.minutes(10)
        }}
     ]
