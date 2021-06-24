@@ -1,5 +1,5 @@
 defmodule Servy.MarkdownTest do
-  use Servy.Case
+  use Servy.Case, async: true
   doctest Servy.Markdown
   alias Servy.Markdown
 

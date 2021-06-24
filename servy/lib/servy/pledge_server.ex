@@ -1,5 +1,5 @@
 defmodule Servy.PledgeServer do
-  @pledge_server __MODULE__
+  @this __MODULE__
 
   # alias Playground.GenericServer
   use GenServer
@@ -11,35 +11,34 @@ defmodule Servy.PledgeServer do
 
   # client interface
 
-  def start_link(%State{} = initial_state) do
-    # GenericServer.start(__MODULE__, initial_state, @pledge_server)
-    GenServer.start_link(__MODULE__, initial_state, name: @pledge_server)
+  def start_link(opts \\ []) do
+    name = Keyword.get(opts, :name, @this)
+    initial_state = Keyword.get(opts, :initial_state, %State{})
+    GenServer.start_link(__MODULE__, initial_state, name: name)
   end
 
-  def start_link(_unexpected_initial_state), do: start_link(%State{})
-
-  def create(name, amount) do
-    GenServer.call(@pledge_server, {:create, name, amount})
+  def create(name, amount, this \\ @this) do
+    GenServer.call(this, {:create, name, amount})
   end
 
-  def recent_pledges() do
-    GenServer.call(@pledge_server, :recent_pledges)
+  def recent_pledges(this \\ @this) do
+    GenServer.call(this, :recent_pledges)
   end
 
-  def total_pledged() do
-    GenServer.call(@pledge_server, :total_pledged)
+  def total_pledged(this \\ @this) do
+    GenServer.call(this, :total_pledged)
   end
 
-  def ping() do
-    GenServer.call(@pledge_server, :ping)
+  def ping(this \\ @this) do
+    GenServer.call(this, :ping)
   end
 
-  def clear_pledges() do
-    GenServer.cast(@pledge_server, :clear_pledges)
+  def clear_pledges(this \\ @this) do
+    GenServer.cast(this, :clear_pledges)
   end
 
-  def set_cache_size(cache_size) do
-    GenServer.cast(@pledge_server, {:set_cache_size, cache_size})
+  def set_cache_size(cache_size, this \\ @this) do
+    GenServer.cast(this, {:set_cache_size, cache_size})
   end
 
   # server callbacks
