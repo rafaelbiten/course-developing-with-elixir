@@ -8,6 +8,7 @@ defmodule Servy.ServicesSupervisor do
   def init(:ok) do
     children = [
       Servy.Count404s,
+      Servy.PledgeAgent,
       Servy.PledgeServer,
       {Servy.SensorServer,
        initial_state: %Servy.SensorServer.State{
