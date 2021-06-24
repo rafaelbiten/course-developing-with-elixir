@@ -1,9 +1,7 @@
 defmodule Servy.MarkdownTest do
-  use ExUnit.Case
+  use Servy.Case
   doctest Servy.Markdown
   alias Servy.Markdown
-
-  import TestHelper, only: [remove_whitespace: 1]
 
   describe "faq/0" do
     test "returns faq.md as html" do

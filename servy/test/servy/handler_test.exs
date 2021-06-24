@@ -1,9 +1,9 @@
 defmodule Servy.HandlerTest do
-  use ExUnit.Case, async: true
+  use Servy.Case, async: true
   doctest Servy.Handler
   alias Servy.Handler
 
-  import TestHelper, only: [remove_whitespace: 1, contains: 2]
+  setup_all :reset_404_count
 
   test "GET /wildthings" do
     request = """
@@ -75,8 +75,6 @@ defmodule Servy.HandlerTest do
 
   @tag :capture_log
   test "404s" do
-    start_supervised!({Servy.Count404s, %{}})
-
     request = """
     GET /unknown HTTP/1.1\r
     Host: example.com\r
