@@ -1,4 +1,6 @@
 defmodule Servy.PledgeServer do
+  @moduledoc false
+
   @this __MODULE__
 
   # alias Playground.GenericServer
@@ -6,6 +8,8 @@ defmodule Servy.PledgeServer do
   require Logger
 
   defmodule State do
+    @moduledoc false
+
     defstruct cache_size: 3, pledges: [], cache_limit: 100
   end
 
@@ -46,7 +50,7 @@ defmodule Servy.PledgeServer do
   def init(%State{} = state), do: {:ok, state}
   def init(_invalid_init_state), do: {:ok, fetch_initial_state()}
 
-  defp fetch_initial_state() do
+  defp fetch_initial_state do
     # we could have async code to initialize the state of this
     %State{}
   end

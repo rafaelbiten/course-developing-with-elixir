@@ -3,6 +3,7 @@ defmodule Servy.SensorServer do
   This server exposes a fn to allow clients to get snapshots.
   These snapshots are cached and refreshed following the refresh_interval.
   """
+
   use GenServer
   require Logger
 
@@ -15,6 +16,8 @@ defmodule Servy.SensorServer do
   @initial_refresh_interval :timer.seconds(5)
 
   defmodule State do
+    @moduledoc false
+
     alias Servy.SensorServer
 
     defstruct refresh_interval: Module.get_attribute(SensorServer, :initial_refresh_interval),
@@ -76,7 +79,7 @@ defmodule Servy.SensorServer do
     Process.send_after(self(), :refresh_sensor_data, refresh_interval)
   end
 
-  defp run_tasks_to_get_sensor_data() do
+  defp run_tasks_to_get_sensor_data do
     0..3
     |> Enum.map(fn _ -> time_based_random_id() end)
     |> Enum.map(&Task.async(VideoCam, :get_snapshot, ["cam-#{&1}"]))

@@ -1,4 +1,6 @@
 defmodule Servy.JsonPlaceholderApi do
+  @moduledoc false
+
   use Tesla
 
   # plug(Tesla.Middleware.JSON, engine: Poison)

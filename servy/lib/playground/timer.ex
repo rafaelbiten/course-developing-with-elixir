@@ -1,4 +1,6 @@
 defmodule Playground.Timer do
+  @moduledoc false
+
   def set_reminder(reminder, seconds) do
     spawn(__MODULE__, :remind, [reminder, seconds])
     IO.puts("You'll be reminded to '#{reminder}' in #{seconds} second(s)")

@@ -1,4 +1,6 @@
 defmodule Servy.PledgeAgent do
+  @moduledoc false
+
   use Agent
 
   @this __MODULE__

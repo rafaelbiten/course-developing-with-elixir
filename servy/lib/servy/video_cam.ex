@@ -1,4 +1,6 @@
 defmodule Servy.VideoCam do
+  @moduledoc false
+
   def get_snapshot(camera_name) do
     # simulate that the api can be slow
     :timer.sleep(:timer.seconds(1))

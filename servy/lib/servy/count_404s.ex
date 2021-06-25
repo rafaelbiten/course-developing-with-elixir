@@ -1,4 +1,6 @@
 defmodule Servy.Count404s do
+  @moduledoc false
+
   use Agent
 
   @this __MODULE__

@@ -1,4 +1,6 @@
 defmodule Servy.ServicesSupervisor do
+  @moduledoc false
+
   use Supervisor
 
   def start_link(_arg) do

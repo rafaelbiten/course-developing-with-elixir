@@ -17,12 +17,12 @@ defmodule Servy.HttpServerGenServer do
   end
 
   # Not using the genserver state
-  def get_http_server_pid() do
+  def get_http_server_pid do
     Process.whereis(Servy.HttpServer)
   end
 
   # Using the genserver state
-  def get_http_server_pid_call() do
+  def get_http_server_pid_call do
     GenServer.call(@name, :get_http_server_pid)
   end
 
@@ -47,7 +47,7 @@ defmodule Servy.HttpServerGenServer do
     {:noreply, new_server_pid}
   end
 
-  defp start_http_server() do
+  defp start_http_server do
     port = Application.fetch_env!(:servy, :port)
     pid = spawn_link(Servy.HttpServer, :start, [port])
     Process.register(pid, Servy.HttpServer)

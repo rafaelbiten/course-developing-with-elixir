@@ -1,4 +1,6 @@
 defmodule Servy.PledgeCtrl do
+  @moduledoc false
+
   use Tesla
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
   plug(Tesla.Middleware.BaseUrl, "https://httparrot.herokuapp.com")

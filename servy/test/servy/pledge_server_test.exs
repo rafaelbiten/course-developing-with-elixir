@@ -179,7 +179,7 @@ defmodule Servy.PledgeServerTest do
 
       assert 3 == length(PledgeServer.recent_pledges(@name))
       PledgeServer.clear_pledges(@name)
-      assert 0 == length(PledgeServer.recent_pledges(@name))
+      assert Enum.empty?(PledgeServer.recent_pledges(@name))
     end
   end
 end
